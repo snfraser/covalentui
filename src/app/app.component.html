@@ -9,11 +9,17 @@
         {{item.title}}
       </a>
     </mat-nav-list>
+
+    <!-- USER ACCOUNT MENU -->
     <div td-navigation-drawer-menu>
       <mat-nav-list>
-        <a mat-list-item *ngFor="let item of usermenu" mat-list-item>
+        <a mat-list-item *ngFor="let item of usermenu">
           <mat-icon>{{item.icon}}</mat-icon>
           {{item.title}}</a>
+        <a mat-list-item (click)="layout.close() && goaway()">
+          <mat-icon>directions_boat</mat-icon>
+          Go away</a>
+
       </mat-nav-list>
     </div>
   </td-navigation-drawer>
@@ -42,14 +48,14 @@
       <a mat-icon-button matTooltip="Docs" href="https://teradata.github.io/covalent/" target="_blank">
         <mat-icon>chrome_reader_mode</mat-icon>
       </a>
-      <a mat-icon-button matTooltip="Github" href="https://github.com/teradata/covalent" target="_blank">
-        <mat-icon svgIcon="assets:github"></mat-icon>
+      <a mat-icon-button matTooltip="loose the right nav" (click)="channelInfo.toggle()">
+        <mat-icon>cancel</mat-icon>
       </a>
     </div>
 
     <mat-nav-list td-sidenav-content [tdLayoutNavListClose]="!media.query('gt-sm')">
       <ng-template let-item let-last="last" ngFor [ngForOf]="navmenu">
-        <a mat-list-item (click)="selnav(item)">
+        <a mat-list-item (click)="selglider(item)">
           <mat-icon matListAvatar>{{item.icon}}</mat-icon>
           <h3 matLine> {{item.title}} </h3>
           <p matLine> {{item.description}} </p>
@@ -58,6 +64,9 @@
       </ng-template>
     </mat-nav-list>
 
+
+
+    <!-- RIGHT SIDENAV CONTAINER -->
     <mat-sidenav-container>
       <mat-sidenav #channelInfo mode="side" align="end" [opened]="true" [style.width.px]="270">
         <div layout="column" layout-fill>
@@ -123,6 +132,69 @@
             </div>
           </td-expansion-panel>
 
+          <!--<td-expansion-panel [expand]="false" color="accent" style="padding-bottom: 30px; margin-right: 15px; margin-bottom: 15px; border: solid 1px blue;" >
+            <ng-template td-expansion-panel-label>
+              <mat-icon class="tc-grey-600">location_on</mat-icon>
+              <span>{{selectedglider}}</span>
+            </ng-template>-->
+
+<mat-card>
+  <mat-card-header style="background-color: #00acc1">
+    <mat-card-title>Glider: {{selectedglider}}</mat-card-title>
+    <mat-card-subtitle>SG567</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+            <!--<div style="padding-bottom: 30px; margin-right: 15px; margin-bottom: 15px; background-color: #c8e6c9">-->
+
+
+              <form>
+                <p></p>
+
+                <mat-form-field>
+                  <mat-select placeholder="Mission" name="fmission" [(ngModel)]="selectedmission">
+                    <mat-option *ngFor="let m of missions" value="{{m.name}}">{{m.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <div class="button-row">
+                  <button mat-mini-fab color="primary" matTooltip="Add a new mission">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+
+                <p></p>
+
+                <mat-divider></mat-divider>
+
+                <mat-form-field>
+                  <mat-select placeholder="Plan Version" name="fplan" [(ngModel)]="selectedplan">
+                    <mat-option *ngFor="let p of plans" value="{{p.id}}">{{p.id}} {{p.value}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <p></p>
+                <div class="button-row">
+                  <button mat-mini-fab color="primary" (click)="checkpass()">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button mat-mini-fab color="accent">
+                    <mat-icon>save</mat-icon>
+                  </button>
+                  <button mat-mini-fab color="warn" [disabled]="true">
+                    <mat-icon>local_airport</mat-icon>
+                  </button>
+                </div>
+
+                <p></p>
+
+              </form>
+
+           <!-- </div>-->
+  </mat-card-content>
+</mat-card>
+
+         <!-- </td-expansion-panel>-->
+
+
           <td-expansion-panel [expand]="false">
             <ng-template td-expansion-panel-label>
               <mat-icon class="tc-grey-600">location_on</mat-icon>
@@ -175,10 +247,10 @@
       <!-- MAIN CONTENT CARD(S) -->
       <div tdMediaToggle="gt-xs" [mediaClasses]="['push-sm']">
         <mat-card>
-          <mat-card-title>{{selectnav=='' ? '' : selectnav + '>> MASSMO-X >> ' + selectedmission + '>>' +
-            selectedplan}}
+          <mat-card-title>
           </mat-card-title>
-          <mat-card-subtitle>subheading</mat-card-subtitle>
+          <mat-card-subtitle> {{selectedglider=='' ? '' : selectedglider + '>> MASSMO-X >> ' + selectedmission + '>>' +
+            selectedplan}}  </mat-card-subtitle>
           <mat-divider></mat-divider>
           <mat-card-content>
 
@@ -186,46 +258,17 @@
 
               <mat-tab *ngFor="let t of tabs" label="{{t.title}}">
 
-                <div flex style="background-color: aliceblue">
-                  <form>
-                    <p></p>
-
-                    <mat-form-field>
-                      <mat-select placeholder="Mission" name="fmission" [(ngModel)]="selectedmission">
-                        <mat-option *ngFor="let m of missions" value="{{m.id}}">{{m.name}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-
-                    <div class="button-row">
-                      <button mat-mini-fab color="primary" matTooltip="Add a new mission"><mat-icon>add</mat-icon></button>
-                    </div>
-
-                    <p></p>
-                    <mat-divider></mat-divider>
-                    <mat-form-field>
-                      <mat-select placeholder="Plan Version" name="fplan" [(ngModel)]="selectedplan">
-                        <mat-option *ngFor="let m of missions" value="{{m.id}}">Plan-V{{m.id}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <p></p>
-                    <div class="button-row">
-                      <button mat-mini-fab color="primary"><mat-icon>add</mat-icon></button>
-                      <button mat-mini-fab color="accent"> <mat-icon>save</mat-icon></button>
-                      <button mat-mini-fab color="warn"><mat-icon>local_airport</mat-icon></button>
-                    </div>
-
-
-                  </form>
-
-                  <br>
-                  <div class="button-row">
-                    <button mat-raised-button color="primary">{{t.title}}-Op1</button>
-                    <button mat-raised-button color="accent">{{t.title}}-Op2</button>
-                    <a mat-button routerLink=".">{{t.title}}-Op3</a>
-                  </div>
-
-
+                <div style="min-height: 700px">
+                  <h2>Stuff about {{t.title}}</h2>
                 </div>
+
+
+              </mat-tab>
+
+              <mat-tab label="Map">
+
+                <img src="./assets/bathymetryuk.jpg" width="800px">
+
               </mat-tab>
 
 

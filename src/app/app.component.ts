@@ -10,8 +10,7 @@ import { TdMediaService } from '@covalent/core';
 export class AppComponent implements AfterViewInit {
 
   selectroute = '';
-  selectnav = '';
-
+  selectedglider = '';
   selectedmission = '';
   selectedplan = '';
 
@@ -87,7 +86,6 @@ export class AppComponent implements AfterViewInit {
 
   tabs: Object[] = [
     {title: 'Mission', x: 'A form and stuff to select missions and plan stuff here'},
-    {title: 'Map', x: 'A map showing the glider positions'},
     {title: 'Charts', x: 'Engineering data charts etc'},
     {title: 'Log', x: 'A log of events relating to the glider'}
   ];
@@ -96,6 +94,14 @@ export class AppComponent implements AfterViewInit {
     {id: 1, name: 'CalibFlight'},
     {id: 2, name: 'OutwardBound'},
     {id: 3, name: 'ScienceRun-1'}
+  ];
+
+  plans: Object[] = [
+    {id: 1, value: 'Launch'},
+    {id: 2, value: 'Dives 2-4'},
+    {id: 3, value: 'Dives 5-12'},
+    {id: 4, value: 'Calib Dive-1'},
+    {id: 5, value: 'Science d13-24'}
   ];
 
   constructor(private _changeDetectorRef: ChangeDetectorRef,
@@ -109,15 +115,32 @@ export class AppComponent implements AfterViewInit {
     });
   }
 
-
-  selnav(thing) {
-    console.log('selnav: ' + thing.title);
-    this.selectnav = thing.title;
+// select off mission dropdown
+  selmission(m) {
+    console.log('selmission: ' + m.title);
+    this.selectedmission = m.title;
   }
 
+  // select off app sidenav
   selroute(thing) {
-    console.log('selroute: ' + thing.title);
+    console.log('selapp: ' + thing.title);
     this.selectroute = thing.title;
-    this.selectnav = '';
+    this.selectedmission = '';
   }
+
+  // select off
+  selglider(g) {
+    console.log('selglider: ' + g.title);
+    this.selectedglider = g.title;
+  }
+
+  checkpass() {
+    const spw = btoa('kar');
+    console.log('u:p=[' + spw + ']');
+  }
+
+  goaway() {
+    document.location.href = 'https://mars.noc.ac.uk';
+  }
+
 }

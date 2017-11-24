@@ -3,6 +3,8 @@
 
   <td-navigation-drawer flex sidenavTitle="Applications" logo="assets:teradata" name="Steve Fraser"
                         email="steve.fraser@sams.ac.uk">
+
+    <!-- APP SELECT MENU -->
     <mat-nav-list>
       <a mat-list-item (click)="layout.close() && selroute(item)" *ngFor="let item of routes">
         <mat-icon>{{item.icon}}</mat-icon>
@@ -23,6 +25,7 @@
       </mat-nav-list>
     </div>
   </td-navigation-drawer>
+
 
   <td-layout-nav-list #navList
                       color="primary"
@@ -53,8 +56,54 @@
       </a>
     </div>
 
+    <!-- LEFT NAV CONTAINER - GLIDER SELECTION -->
     <mat-nav-list td-sidenav-content [tdLayoutNavListClose]="!media.query('gt-sm')">
-      <ng-template let-item let-last="last" ngFor [ngForOf]="navmenu">
+
+      <div style="padding-bottom: 10px;">
+      <h3 matSubheader>Gliders</h3>
+      <mat-chip-list >
+        <mat-chip (click)="applyFilter(1)" matTooltip="ALL">
+          <mat-icon class="wee-icon" >view_list</mat-icon>
+        </mat-chip>
+        <mat-chip (click)="applyFilter(2)" matTooltip="Deployment">
+          <mat-icon class="wee-icon">rowing</mat-icon>
+        </mat-chip>
+        <mat-chip (click)="applyFilter(3)" matTooltip="Favorites">
+          <mat-icon class="wee-icon">favorite</mat-icon>
+        </mat-chip>
+        <mat-chip (click)="applyFilter(4)" matTooltip="Recent">
+          <mat-icon class="wee-icon">query_builder</mat-icon>
+        </mat-chip>
+        <mat-chip (click)="applyFilter(5)" matTooltip="By type">
+          <mat-icon class="wee-icon">airplanemode_active</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+      </div>
+
+      <!-- Deployment selection hidden form -->
+      <div [hidden]="noDisplayDeployments" class="divpadded">
+        <mat-form-field>
+        <mat-select placeholder="Deployment Group" name="f_deploy" [(ngModel)]="selecteddeploy" (change)="onDeploymentChanged($event.value)">
+          <mat-option *ngFor="let d of deployments" [value]="d.id">
+            {{ d.name }}
+          </mat-option>
+        </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Type selection hidden form -->
+      <div [hidden]="noDisplayTypes" class="divpadded" (change)="onTypeChanged($event.value)">
+        <mat-form-field>
+        <mat-select placeholder="Glider Type" (change)="onTypeChanged($event.value)">
+          <mat-option *ngFor="let t of types" [value]="t.id">
+            {{ t.name }}
+          </mat-option>
+        </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-divider ></mat-divider>
+      <ng-template let-item let-last="last" ngFor [ngForOf]="filteredGliders">
         <a mat-list-item (click)="selglider(item)">
           <mat-icon matListAvatar>{{item.icon}}</mat-icon>
           <h3 matLine> {{item.title}} </h3>
@@ -65,8 +114,7 @@
     </mat-nav-list>
 
 
-
-    <!-- RIGHT SIDENAV CONTAINER -->
+    <!-- RIGHT SIDENAV CONTAINER - CHAT AND MISSION SELECTION -->
     <mat-sidenav-container>
       <mat-sidenav #channelInfo mode="side" align="end" [opened]="true" [style.width.px]="270">
         <div layout="column" layout-fill>
@@ -78,10 +126,70 @@
             </button>
           </mat-toolbar>
 
-          <td-expansion-panel [expand]="true">
+          <!-- MISSION SELECTION CARD -->
+          <mat-card>
+            <mat-card-header style="background-color: lightseagreen">
+              <mat-card-title>Glider: {{selectedglider}}</mat-card-title>
+              <mat-card-subtitle>SG567</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <!--<div style="padding-bottom: 30px; margin-right: 15px; margin-bottom: 15px; background-color: #c8e6c9">-->
+
+
+              <form>
+                <p></p>
+
+                <mat-form-field>
+                  <mat-select placeholder="Mission" name="fmission" [(ngModel)]="selectedmission">
+                    <mat-option *ngFor="let m of missions" value="{{m.name}}">{{m.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <div class="button-row">
+                  <button mat-mini-fab color="primary" matTooltip="Add a new mission">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+
+                <p></p>
+
+                <mat-divider></mat-divider>
+
+                <mat-form-field>
+                  <mat-select placeholder="Plan Version" name="fplan" [(ngModel)]="selectedplan">
+                    <mat-option *ngFor="let p of plans" value="{{p.id}}">{{p.id}} {{p.value}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <p></p>
+                <div class="button-row">
+                  <button mat-mini-fab color="primary" (click)="checkpass()"  matTooltip="Add a new plan version">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button mat-mini-fab color="accent"  matTooltip="Commit latest plan version">
+                    <mat-icon>save</mat-icon>
+                  </button>
+                  <button mat-mini-fab color="warn" [disabled]="true"  matTooltip="Transmit plan to glider">
+                    <mat-icon>local_airport</mat-icon>
+                  </button>
+                </div>
+
+                <p></p>
+
+              </form>
+
+              <!-- </div>-->
+            </mat-card-content>
+          </mat-card>
+
+          <!-- </td-expansion-panel>-->
+
+
+
+
+          <td-expansion-panel [expand]="false">
             <ng-template td-expansion-panel-label>
               <mat-icon class="tc-grey-600">perm_identity</mat-icon>
-              <span>Pilots online</span>
+              <span>Pilots</span>
             </ng-template>
             <div>
               <mat-list dense>
@@ -108,7 +216,7 @@
           <td-expansion-panel [expand]="false">
             <ng-template td-expansion-panel-label>
               <mat-icon class="tc-grey-600">wifi</mat-icon>
-              <span>Glider comms</span>
+              <span>Gliders</span>
             </ng-template>
             <div>
               <mat-list dense>
@@ -138,61 +246,6 @@
               <span>{{selectedglider}}</span>
             </ng-template>-->
 
-<mat-card>
-  <mat-card-header style="background-color: #00acc1">
-    <mat-card-title>Glider: {{selectedglider}}</mat-card-title>
-    <mat-card-subtitle>SG567</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
-            <!--<div style="padding-bottom: 30px; margin-right: 15px; margin-bottom: 15px; background-color: #c8e6c9">-->
-
-
-              <form>
-                <p></p>
-
-                <mat-form-field>
-                  <mat-select placeholder="Mission" name="fmission" [(ngModel)]="selectedmission">
-                    <mat-option *ngFor="let m of missions" value="{{m.name}}">{{m.name}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-
-                <div class="button-row">
-                  <button mat-mini-fab color="primary" matTooltip="Add a new mission">
-                    <mat-icon>add</mat-icon>
-                  </button>
-                </div>
-
-                <p></p>
-
-                <mat-divider></mat-divider>
-
-                <mat-form-field>
-                  <mat-select placeholder="Plan Version" name="fplan" [(ngModel)]="selectedplan">
-                    <mat-option *ngFor="let p of plans" value="{{p.id}}">{{p.id}} {{p.value}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <p></p>
-                <div class="button-row">
-                  <button mat-mini-fab color="primary" (click)="checkpass()">
-                    <mat-icon>add</mat-icon>
-                  </button>
-                  <button mat-mini-fab color="accent">
-                    <mat-icon>save</mat-icon>
-                  </button>
-                  <button mat-mini-fab color="warn" [disabled]="true">
-                    <mat-icon>local_airport</mat-icon>
-                  </button>
-                </div>
-
-                <p></p>
-
-              </form>
-
-           <!-- </div>-->
-  </mat-card-content>
-</mat-card>
-
-         <!-- </td-expansion-panel>-->
 
 
           <td-expansion-panel [expand]="false">
@@ -202,7 +255,7 @@
             </ng-template>
             <div>
               <mat-list dense>
-                <h3 matSubheader>Online</h3>
+                <h3 matSubheader>Latest</h3>
                 <ng-template let-item let-i="index" let-last="last" ngFor [ngForOf]="[0,1,2,3,4,5]">
                   <mat-list-item>
                     <mat-icon matListIcon>my_location</mat-icon>
@@ -225,18 +278,29 @@
           <td-expansion-panel>
             <ng-template td-expansion-panel-label>
               <mat-icon class="tc-green-600">person_outline</mat-icon>
-              <span>6 Users</span>
+              <span>8 Users</span>
             </ng-template>
             <div>
               <mat-list dense>
-                <ng-template let-item let-i="index" let-last="last" ngFor [ngForOf]="[0,1,2,3,4,5]">
+
+
+                <!--<ng-template let-item let-i="index" let-last="last" ngFor [ngForOf]="[0,1,2,3,4,5]">
                   <a mat-list-item>
                     <mat-icon color="accent" matListIcon>lens</mat-icon>
                     <span layout="row" layout-align="start center">
                       <img class="size-16 push-right-sm"
                            src="https://api.adorable.io/avatars/285/{{i}}@adorable.io.png"/> username{{i}}</span>
                   </a>
-                </ng-template>
+                </ng-template>-->
+
+                <a mat-list-item *ngFor="let c of chatUsers; let i = index">
+                  <mat-icon color="accent" matListIcon>lens</mat-icon>
+                  <span layout="row" layout-align="start center">
+                      <img class="size-24 push-right-sm"
+                           src="https://api.adorable.io/avatars/285/{{c.name}}.png"/> {{c.name}}</span>
+                </a>
+
+
               </mat-list>
             </div>
           </td-expansion-panel>
@@ -249,8 +313,9 @@
         <mat-card>
           <mat-card-title>
           </mat-card-title>
-          <mat-card-subtitle> {{selectedglider=='' ? '' : selectedglider + '>> MASSMO-X >> ' + selectedmission + '>>' +
-            selectedplan}}  </mat-card-subtitle>
+          <mat-card-subtitle> {{selectedglider=='' ? '' : selectedglider + '>>' + selecteddeploy + '>>' + selectedmission + '>>' +
+            selectedplan}}
+          </mat-card-subtitle>
           <mat-divider></mat-divider>
           <mat-card-content>
 

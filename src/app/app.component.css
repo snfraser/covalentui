@@ -1,0 +1,11 @@
+.wee-icon {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.divpadded {
+  padding-bottom: 10px;
+  padding-top: 10px;
+  background-color: lightseagreen;
+}

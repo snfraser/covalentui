@@ -8,7 +8,6 @@ import {
   MatCardModule,
   MatChipsModule,
   MatDialogModule,
-  MatTooltipModule,
   MatIconModule,
   MatListModule,
   MatRadioModule,
@@ -20,9 +19,14 @@ import {
   MatToolbarModule,
 } from '@angular/material';
 
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 import {CovalentDynamicFormsModule} from '@covalent/dynamic-forms';
 import {
-  CovalentCommonModule, CovalentExpansionPanelModule, CovalentLayoutModule, CovalentMediaModule,
+  CovalentCommonModule,
+  CovalentExpansionPanelModule,
+  CovalentLayoutModule,
+  CovalentMediaModule,
   CovalentStepsModule
 } from '@covalent/core';
 
@@ -48,11 +52,12 @@ import { AppComponent } from './app.component';
     MatSelectModule,
     MatOptionModule,
     MatToolbarModule,
+    MatTooltipModule,
     MatCardModule,
     MatRadioModule,
     MatIconModule,
     CovalentLayoutModule,
-  CovalentCommonModule,
+    CovalentCommonModule,
     CovalentMediaModule,
     CovalentStepsModule,
     CovalentExpansionPanelModule,

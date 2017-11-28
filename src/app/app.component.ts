@@ -172,6 +172,10 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   noDisplayTypes = true;
 
+  oceanidsUserName: string = '';
+  oceanidsAccessToken: string = '';
+  oceanidsTokenExpires: any;
+
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               public media: TdMediaService) {
   }
@@ -180,6 +184,9 @@ export class AppComponent implements AfterViewInit, OnInit {
 
     this.filteredGliders = this.navmenu;
 
+    this.oceanidsUserName = localStorage.getItem('oceanids_user');
+    this.oceanidsAccessToken = localStorage.getItem('oceanids_access_token');
+    this.oceanidsTokenExpires = localStorage.getItem('oceanids_token_expires');
   }
 
   ngAfterViewInit(): void {

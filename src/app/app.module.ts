@@ -16,7 +16,7 @@ import {
   MatSidenavModule,
   MatSnackBarModule,
   MatTabsModule,
-  MatToolbarModule,
+  MatToolbarModule, MatMenuModule,
 } from '@angular/material';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -26,7 +26,7 @@ import {
   CovalentCommonModule,
   CovalentExpansionPanelModule,
   CovalentLayoutModule,
-  CovalentMediaModule,
+  CovalentMediaModule, CovalentMenuModule, CovalentNotificationsModule,
   CovalentStepsModule
 } from '@covalent/core';
 
@@ -48,6 +48,7 @@ import { AppComponent } from './app.component';
     MatChipsModule,
     MatListModule,
     MatTabsModule,
+    MatMenuModule,
     MatSidenavModule,
     MatSelectModule,
     MatOptionModule,
@@ -60,8 +61,10 @@ import { AppComponent } from './app.component';
     CovalentCommonModule,
     CovalentMediaModule,
     CovalentStepsModule,
+    CovalentMenuModule,
     CovalentExpansionPanelModule,
-    CovalentDynamicFormsModule],
+    CovalentDynamicFormsModule,
+  CovalentNotificationsModule],
   providers: [],
   bootstrap: [AppComponent]
 })

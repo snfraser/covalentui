@@ -126,7 +126,43 @@ export class AppComponent implements AfterViewInit, OnInit {
     description: 'SG163 - UoW-G2',
     type: 2,
     deployments: [1, 2, 5, 7]
-  }
+  }, {
+      icon: 'flight_land',
+      route: '.',
+      title: 'Aldebaran',
+      description: 'SG155 - UoW-G2',
+      type: 2,
+      deployments: [3, 6, 7]
+    }, {
+      icon: 'flight_land',
+      route: '.',
+      title: 'Mersak',
+      description: 'SG113 - Teledyne-M1',
+      type: 3,
+      deployments: [2, 3, 5, 7]
+    }, {
+      icon: 'local_airport',
+      route: '.',
+      title: 'Rigel',
+      description: 'unit_345 - UoW-G2',
+      type: 2,
+      deployments: [1, 3, 5, 7]
+    }, {
+      icon: 'flight_land',
+      route: '.',
+      title: 'Alnilalm',
+      description: 'SG183 - Teledyne-M1',
+      type: 3,
+      deployments: [2, 3, 5, 6]
+    }, {
+      icon: 'local_airport',
+      route: '.',
+      title: 'Rigel',
+      description: 'unit_205 - UoW-G2',
+      type: 2,
+      deployments: [3, 6, 7]
+    }
+
   ];
 
   tabs: Object[] = [

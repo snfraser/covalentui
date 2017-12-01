@@ -169,8 +169,24 @@
                   </mat-select>
                 </mat-form-field>
 
+                <!-- NEW MISSION EDIT PANEL -->
+                <div [hidden]="noNewMission">
+                  <mat-form-field>
+                    <input matInput placeholder="New mission name" name="f_new_mission" value="mission-name" [(ngModel)]="newMissionName">
+                    <button mat-button matSuffix mat-icon-button matTooltip="clear" (click)="newMissionName=''">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                    <button mat-button matSuffix mat-icon-button color="warn" matTooltip="Create mission" (click)="createMission()">
+                      <mat-icon>cloud_done</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+
+
+
+
                 <div class="button-row">
-                  <button mat-mini-fab color="primary" matTooltip="Add a new mission">
+                  <button mat-mini-fab color="primary" matTooltip="Add a new mission" (click)="addNewMission()">
                     <mat-icon>add</mat-icon>
                   </button>
                 </div>

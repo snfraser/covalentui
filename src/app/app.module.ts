@@ -16,7 +16,7 @@ import {
   MatSidenavModule,
   MatSnackBarModule,
   MatTabsModule,
-  MatToolbarModule, MatMenuModule,
+  MatToolbarModule, MatMenuModule, MatInputModule,
 } from '@angular/material';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -48,6 +48,7 @@ import { AppComponent } from './app.component';
     MatChipsModule,
     MatListModule,
     MatTabsModule,
+    MatInputModule,
     MatMenuModule,
     MatSidenavModule,
     MatSelectModule,

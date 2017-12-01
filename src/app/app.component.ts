@@ -208,6 +208,10 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   noDisplayTypes = true;
 
+  noNewMission = true;
+
+  newMissionName;
+
   oceanidsUserName: string = '';
   oceanidsAccessToken: string = '';
   oceanidsTokenExpires: any;
@@ -259,6 +263,12 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   goaway() {
     document.location.href = 'https://mars.noc.ac.uk';
+  }
+
+  addNewMission() {
+
+    this.noNewMission = !this.noNewMission;
+
   }
 
   applyFilter(filter) {

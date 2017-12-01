@@ -10,10 +10,10 @@
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue.
 $mp-primary: mat-palette($mat-teal);
-$mp-accent:  mat-palette($mat-lime, A200, A100, A400);
+$mp-accent:  mat-palette($mat-amber, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$mp-warn:    mat-palette($mat-red);
+$mp-warn:    mat-palette($mat-pink);
 
 // Create the theme object (a Sass map containing all of the palettes).
 $mp-theme: mat-light-theme($mp-primary, $mp-accent, $mp-warn);

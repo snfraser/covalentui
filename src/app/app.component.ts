@@ -154,15 +154,7 @@ export class AppComponent implements AfterViewInit, OnInit {
       description: 'SG183 - Teledyne-M1',
       type: 3,
       deployments: [2, 3, 5, 6]
-    }, {
-      icon: 'local_airport',
-      route: '.',
-      title: 'Rigel',
-      description: 'unit_205 - UoW-G2',
-      type: 2,
-      deployments: [3, 6, 7]
     }
-
   ];
 
   tabs: Object[] = [
@@ -174,7 +166,9 @@ export class AppComponent implements AfterViewInit, OnInit {
   missions: Object[] = [
     {id: 1, name: 'CalibFlight'},
     {id: 2, name: 'OutwardBound'},
-    {id: 3, name: 'ScienceRun-1'}
+    {id: 3, name: 'ScienceRun-1'},
+    {id: 4, name: 'ScienceRun-2a'},
+    {id: 5, name: 'ScienceRun-2b'}
   ];
 
   plans: Object[] = [
@@ -268,6 +262,12 @@ export class AppComponent implements AfterViewInit, OnInit {
   addNewMission() {
 
     this.noNewMission = !this.noNewMission;
+
+  }
+
+  createMission() {
+    // extract the name from the form field and send to backend
+
 
   }
 

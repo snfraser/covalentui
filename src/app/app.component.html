@@ -1,8 +1,8 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <td-layout #layout>
 
-  <td-navigation-drawer flex sidenavTitle="Applications" logo="assets:teradata" name="Steve Fraser"
-                        email="steve.fraser@sams.ac.uk">
+  <td-navigation-drawer flex sidenavTitle="Applications" logo="assets:teradata" name="{{loginName}}"
+                        email="{{loginEmail}}">
 
     <!-- APP SELECT MENU -->
     <mat-nav-list>
@@ -21,7 +21,6 @@
         <a mat-list-item (click)="layout.close() && goaway()">
           <mat-icon>directions_boat</mat-icon>
           Portal</a>
-
       </mat-nav-list>
     </div>
   </td-navigation-drawer>

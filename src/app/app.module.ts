@@ -2,7 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
-import {RouterModule} from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+
 import {
   MatButtonModule,
   MatCardModule,
@@ -32,6 +34,8 @@ import {
 
 import { AppComponent } from './app.component';
 
+import {AuthenticationService} from './authentication.service';
+
 
 @NgModule({
   declarations: [
@@ -41,6 +45,7 @@ import { AppComponent } from './app.component';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    HttpClientModule,
     RouterModule.forRoot([]),
     MatButtonModule,
     MatDialogModule,
@@ -65,8 +70,8 @@ import { AppComponent } from './app.component';
     CovalentMenuModule,
     CovalentExpansionPanelModule,
     CovalentDynamicFormsModule,
-  CovalentNotificationsModule],
-  providers: [],
+    CovalentNotificationsModule],
+  providers: [AuthenticationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

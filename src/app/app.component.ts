@@ -1,5 +1,9 @@
 import {Component, HostBinding, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, OnInit} from '@angular/core';
 import {TdMediaService} from '@covalent/core';
+import * as moment from 'moment';
+import {Moment} from 'moment';
+
+import {AuthenticationService} from './authentication.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -206,21 +210,83 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   newMissionName;
 
+  loginName: string = 'SNF';
+  loginEmail: string = 'snf@sams';
+
   oceanidsUserName: string = '';
   oceanidsAccessToken: string = '';
   oceanidsTokenExpires: any;
 
+  // related to login
+  accessToken;
+  refreshToken;
+  userName;
+  expiresAt;
+  nextRefresh;
+  countDown = 0;
+  refreshCount = 0;
+
   constructor(private _changeDetectorRef: ChangeDetectorRef,
-              public media: TdMediaService) {
+              public media: TdMediaService,
+              private authService: AuthenticationService) {
   }
 
   ngOnInit() {
 
+
+
     this.filteredGliders = this.navmenu;
 
-    this.oceanidsUserName = localStorage.getItem('oceanids_user');
-    this.oceanidsAccessToken = localStorage.getItem('oceanids_access_token');
-    this.oceanidsTokenExpires = localStorage.getItem('oceanids_token_expires');
+
+
+    const c_accessToken = localStorage.getItem(AuthenticationService.OCEANIDS_ACCESS_TOKEN);
+
+
+
+    if (c_accessToken) {
+
+      // log this value it may be what we are looking for...
+      console.log('OnInit:: read value of access_token: [' + c_accessToken + '] - must be logged in already');
+
+      // set items to display on UI
+      this.accessToken = c_accessToken;
+      this.expiresAt = localStorage.getItem(AuthenticationService.OCEANIDS_TOKEN_EXPIRY);
+      this.refreshToken = localStorage.getItem(AuthenticationService.OCEANIDS_REFRESH_TOKEN);
+      this.loginEmail = localStorage.getItem(AuthenticationService.OCEANIDS_USER);
+      // for now we dont have this - get from userreg api
+      this.loginName = localStorage.getItem(AuthenticationService.OCEANIDS_USER);;
+
+      // these are temp - to display on ui tabs for no good reason
+      this.oceanidsUserName = localStorage.getItem(AuthenticationService.OCEANIDS_USER);
+      this.oceanidsAccessToken = localStorage.getItem(AuthenticationService.OCEANIDS_ACCESS_TOKEN);
+      this.oceanidsTokenExpires = localStorage.getItem(AuthenticationService.OCEANIDS_TOKEN_EXPIRY);
+
+      const m_expAtTime: Moment = moment.parseZone(this.expiresAt);
+      const m_now: Moment = moment();
+
+      // calc time to go - may be negative: If timeDiff is +ve we are OVERRUN, else time to go until expiry
+
+      const timeDiff = m_now.diff(m_expAtTime, 'seconds');
+
+      if (timeDiff >= 0) {
+        console.log('OnInit:: Access token expired ' + timeDiff + ' secs ago - attempting auto-login...');
+      } else {
+        console.log('OnInit:: Access token still valid for: ' + timeDiff + ' secs - starting auto-refresh using exisiting refresh token...');
+      }
+
+
+    } else {
+      console.log('OnInit:: accessToken is NOT defined - either redirect to login page or get one ourselves if local testing');
+
+    }
+
+    // setup countdown timer
+    setInterval(() => {
+      if (this.countDown >= 2) {
+        this.countDown -= 2;
+      }
+    }, 2000);
+
   }
 
   ngAfterViewInit(): void {

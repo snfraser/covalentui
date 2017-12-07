@@ -9,3 +9,15 @@
   padding-top: 10px;
   background-color: lightseagreen;
 }
+
+.hostenvlabel {
+  color: orange;
+  font-size: 12pt;
+  font-weight: bold;
+
+}
+
+
+.modalbd {
+  background-color: darkorchid;
+}

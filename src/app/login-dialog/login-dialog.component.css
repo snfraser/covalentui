@@ -1,0 +1,12 @@
+.loginform {
+  max-width: 500px;
+}
+
+.loginformtitle {
+  background-color: fuchsia;
+  color: lightyellow;
+}
+
+.modalbd {
+  background-color: darkorchid;
+}

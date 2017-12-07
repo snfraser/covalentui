@@ -35,11 +35,13 @@ import {
 import { AppComponent } from './app.component';
 
 import {AuthenticationService} from './authentication.service';
+import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -72,6 +74,7 @@ import {AuthenticationService} from './authentication.service';
     CovalentDynamicFormsModule,
     CovalentNotificationsModule],
   providers: [AuthenticationService],
+  entryComponents: [LoginDialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

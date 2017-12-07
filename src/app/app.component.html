@@ -15,12 +15,19 @@
     <!-- USER ACCOUNT MENU -->
     <div td-navigation-drawer-menu>
       <mat-nav-list>
+
+        <a mat-list-item (click)="layout.close() && openLogin()">
+          <mat-icon>account_circle</mat-icon>
+          Login</a>
+
         <a mat-list-item *ngFor="let item of usermenu">
           <mat-icon>{{item.icon}}</mat-icon>
           {{item.title}}</a>
+
         <a mat-list-item (click)="layout.close() && goaway()">
           <mat-icon>directions_boat</mat-icon>
           Portal</a>
+
       </mat-nav-list>
     </div>
   </td-navigation-drawer>
@@ -37,7 +44,7 @@
         <mat-icon>menu</mat-icon>
       </button>
       <mat-icon [routerLink]="['/']" class="mat-icon-logo cursor-pointer" svgIcon="assets:teradata"></mat-icon>
-      <span [routerLink]="['/']" class="cursor-pointer">Oceanids C2</span>
+      <span [routerLink]="['/']" class="cursor-pointer">Oceanids C2 </span> <span class="hostenvlabel">&nbsp;&nbsp;[{{hostEnv}}]</span>
     </div>
 
     <!-- TOOLBAR - Title appears when lt-sm -->
@@ -47,6 +54,8 @@
       </button>
       <span>{{selectroute}}</span>
       <span flex></span>
+
+      <span style="color: mediumspringgreen">[{{countDown}}]</span>
 
       <button class="overflow-visible" mat-icon-button [matMenuTriggerFor]="notificationsMenu">
         <td-notification-count [notifications]="16">
@@ -151,7 +160,7 @@
 
           <!-- MISSION SELECTION CARD -->
           <mat-card>
-            <mat-card-header style="background-color: lightseagreen">
+            <mat-card-header style="background-color: lightseagreen ">
               <mat-card-title>Glider: {{selectedglider}}</mat-card-title>
               <mat-card-subtitle>SG567</mat-card-subtitle>
             </mat-card-header>

@@ -1,9 +1,16 @@
-import {Component, HostBinding, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, OnInit} from '@angular/core';
-import {TdMediaService} from '@covalent/core';
+import {
+  Component, HostBinding, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, OnInit,
+  ViewChild, ElementRef
+} from '@angular/core';
+import {TdLayoutComponent, TdMediaService} from '@covalent/core';
 import * as moment from 'moment';
 import {Moment} from 'moment';
+import {environment} from '../environments/environment';
 
 import {AuthenticationService} from './authentication.service';
+import {MatDialog, MatDialogRef} from '@angular/material';
+import {LoginDialogComponent} from './login-dialog/login-dialog.component';
+
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,6 +19,9 @@ import {AuthenticationService} from './authentication.service';
   templateUrl: './app.component.html',
 })
 export class AppComponent implements AfterViewInit, OnInit {
+
+  @ViewChild('layout', {read: ElementRef}) layout: ElementRef;
+
 
   selectroute = '';
   selectedglider = '';
@@ -131,34 +141,34 @@ export class AppComponent implements AfterViewInit, OnInit {
     type: 2,
     deployments: [1, 2, 5, 7]
   }, {
-      icon: 'flight_land',
-      route: '.',
-      title: 'Aldebaran',
-      description: 'SG155 - UoW-G2',
-      type: 2,
-      deployments: [3, 6, 7]
-    }, {
-      icon: 'flight_land',
-      route: '.',
-      title: 'Mersak',
-      description: 'SG113 - Teledyne-M1',
-      type: 3,
-      deployments: [2, 3, 5, 7]
-    }, {
-      icon: 'local_airport',
-      route: '.',
-      title: 'Rigel',
-      description: 'unit_345 - UoW-G2',
-      type: 2,
-      deployments: [1, 3, 5, 7]
-    }, {
-      icon: 'flight_land',
-      route: '.',
-      title: 'Alnilalm',
-      description: 'SG183 - Teledyne-M1',
-      type: 3,
-      deployments: [2, 3, 5, 6]
-    }
+    icon: 'flight_land',
+    route: '.',
+    title: 'Aldebaran',
+    description: 'SG155 - UoW-G2',
+    type: 2,
+    deployments: [3, 6, 7]
+  }, {
+    icon: 'flight_land',
+    route: '.',
+    title: 'Mersak',
+    description: 'SG113 - Teledyne-M1',
+    type: 3,
+    deployments: [2, 3, 5, 7]
+  }, {
+    icon: 'local_airport',
+    route: '.',
+    title: 'Rigel',
+    description: 'unit_345 - UoW-G2',
+    type: 2,
+    deployments: [1, 3, 5, 7]
+  }, {
+    icon: 'flight_land',
+    route: '.',
+    title: 'Alnilalm',
+    description: 'SG183 - Teledyne-M1',
+    type: 3,
+    deployments: [2, 3, 5, 6]
+  }
   ];
 
   tabs: Object[] = [
@@ -210,11 +220,11 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   newMissionName;
 
-  loginName: string = 'SNF';
-  loginEmail: string = 'snf@sams';
+  loginName = 'SNF';
+  loginEmail = 'snf@sams';
 
-  oceanidsUserName: string = '';
-  oceanidsAccessToken: string = '';
+  oceanidsUserName = '';
+  oceanidsAccessToken = '';
   oceanidsTokenExpires: any;
 
   // related to login
@@ -226,21 +236,30 @@ export class AppComponent implements AfterViewInit, OnInit {
   countDown = 0;
   refreshCount = 0;
 
+  hostEnv = '';
+
+  timer;
+
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               public media: TdMediaService,
-              private authService: AuthenticationService) {
+              private authService: AuthenticationService,
+              private dialogFactory: MatDialog) {
   }
 
   ngOnInit() {
 
 
-
     this.filteredGliders = this.navmenu;
 
+    this.hostEnv = environment.host;
+
+    console.log('OnInit:: Hosted: ' + this.hostEnv);
+
+    // if we are running locally (hostEnv===local) then do local login - need loginform
+    // if we are running dev deployed (hostEnv===dev) then redirect to loginapp
 
 
     const c_accessToken = localStorage.getItem(AuthenticationService.OCEANIDS_ACCESS_TOKEN);
-
 
 
     if (c_accessToken) {
@@ -254,7 +273,7 @@ export class AppComponent implements AfterViewInit, OnInit {
       this.refreshToken = localStorage.getItem(AuthenticationService.OCEANIDS_REFRESH_TOKEN);
       this.loginEmail = localStorage.getItem(AuthenticationService.OCEANIDS_USER);
       // for now we dont have this - get from userreg api
-      this.loginName = localStorage.getItem(AuthenticationService.OCEANIDS_USER);;
+      this.loginName = localStorage.getItem(AuthenticationService.OCEANIDS_USER);
 
       // these are temp - to display on ui tabs for no good reason
       this.oceanidsUserName = localStorage.getItem(AuthenticationService.OCEANIDS_USER);
@@ -269,14 +288,40 @@ export class AppComponent implements AfterViewInit, OnInit {
       const timeDiff = m_now.diff(m_expAtTime, 'seconds');
 
       if (timeDiff >= 0) {
-        console.log('OnInit:: Access token expired ' + timeDiff + ' secs ago - attempting auto-login...');
+        console.log('OnInit:: Access token expired ' + (timeDiff) + ' secs ago - attempting auto-login...');
+
+        // cant just log in as we dont have the password - assuming its the same user.....
+
+        this.openLogin();
+
       } else {
-        console.log('OnInit:: Access token still valid for: ' + timeDiff + ' secs - starting auto-refresh using exisiting refresh token...');
+        console.log('OnInit:: Access token still valid for: ' + (-timeDiff) + ' secs - starting auto-refresh using exisiting refresh token...');
+
+        this.refresh(true);
+
       }
 
 
     } else {
       console.log('OnInit:: accessToken is NOT defined - either redirect to login page or get one ourselves if local testing');
+
+      if (this.hostEnv === 'local') {
+        console.log('OnInit:: Looks like LOCAL/TESTING mode - show local login form...');
+
+        this.openLogin();
+
+      } else if (this.hostEnv === 'dev') {
+        console.log('OnInit:: Looks like DEVELOPMENT/TESTING mode - redirect to loginapp...');
+
+        // OR document.open('https://c2-pilot.test.oceanids.ml/login/');
+
+        document.location.href = 'https://c2-pilot.test.oceanids.ml/login/';
+
+      } else {
+        // blimey we might be in production mode  !
+        console.log('OnInit:: Looks like PRODUCTION mode - redirect to loginapp...');
+      }
+
 
     }
 
@@ -290,6 +335,10 @@ export class AppComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
+
+    console.log('Found layout object: ');
+    console.log(this.layout);
+
     // broadcast to all listener observables when loading the page
     setTimeout(() => { // workaround since MatSidenav has issues redrawing at the beggining
       this.media.broadcast();
@@ -394,6 +443,143 @@ export class AppComponent implements AfterViewInit, OnInit {
     this.filteredGliders = this.navmenu.filter(g => g.type === id);
 
     console.log(this.filteredGliders);
+
+  }
+
+  /**
+   * Open a local login dialog. Login to gateway and update local access info. Start auto refresh.
+   */
+  openLogin() {
+
+    const loginDialog = this.dialogFactory.open(LoginDialogComponent,
+      {backdropClass: 'modalbd', hasBackdrop: true, disableClose: true});
+
+    // handle the login results - first check they are not rubbish
+    loginDialog.afterClosed().subscribe(
+      model => {
+        console.log('App::LoginCLosedObservable:: Got data...');
+        console.log(model);
+
+        // close the layout here - how do we get a reference to the element
+        this.layout.nativeElement.setAttribute('opened', false);
+
+        this.login(model.userName, model.password);
+
+
+      }
+    );
+
+  }
+
+
+  /**
+   * Login using the stored user info and credentials.
+   */
+  login(userName: string, password: string) {
+    this.authService.login(userName, password)
+      .subscribe(
+        auth => {
+          console.log('Login successfull...');
+          // extract useful data
+          const c_accessToken = auth.access_token;
+          const c_refreshToken = auth.refresh_token;
+          const c_expiresIn = auth.expires_in;
+
+          // fill local storage
+          localStorage.setItem(AuthenticationService.OCEANIDS_ACCESS_TOKEN, c_accessToken);
+          localStorage.setItem(AuthenticationService.OCEANIDS_REFRESH_TOKEN, c_refreshToken);
+          localStorage.setItem(AuthenticationService.APP_TOKEN_EXPIRES_IN, c_expiresIn);
+          localStorage.setItem(AuthenticationService.OCEANIDS_USER, userName);
+
+          // compute expiry time as now plus expires in
+          const mnow = moment();
+          const m_expiryTime = mnow.add(+c_expiresIn, 'seconds');
+
+          localStorage.setItem(AuthenticationService.OCEANIDS_TOKEN_EXPIRY, m_expiryTime.format());
+
+          console.log('Access token:  ' + c_accessToken);
+          console.log('  expires in:  ' + c_expiresIn + ' secs');
+          console.log('Refresh token: ' + c_refreshToken);
+
+          // display variables
+          this.userName = localStorage.getItem(AuthenticationService.OCEANIDS_USER);
+          this.accessToken = c_accessToken;
+          this.refreshToken = c_refreshToken;
+          this.expiresAt = m_expiryTime.format();
+
+        },
+        error => {
+          console.log('Error logging in...');
+          console.log(error);
+          // this needs to get to notifyService or to
+        }
+      );
+  }
+
+  /**
+   * Refresh the login access tokens.
+   * @param {boolean} auto True if this should automatically refresh at intervals - normally true.
+   */
+  refresh(auto: boolean) {
+
+    console.log('Refresh auto=' + auto);
+
+    this.authService.refresh()
+      .subscribe(
+        auth => {
+          const c_accessToken = auth.access_token;
+          const c_expiresIn = auth.expires_in;
+          const c_refreshToken = auth.refresh_token;
+
+
+          localStorage.setItem(AuthenticationService.OCEANIDS_ACCESS_TOKEN, c_accessToken);
+          localStorage.setItem(AuthenticationService.OCEANIDS_REFRESH_TOKEN, c_refreshToken);
+          localStorage.setItem(AuthenticationService.APP_TOKEN_EXPIRES_IN, c_expiresIn);
+
+          // compute expiry time as now plus expires in
+          const mnow = moment();
+          const m_expiryTime = mnow.add(+c_expiresIn, 'seconds');
+          const timeToGo = +c_expiresIn - 2700; // secs
+
+          localStorage.setItem(AuthenticationService.OCEANIDS_TOKEN_EXPIRY, m_expiryTime.format());
+
+          console.log('Access token:  ' + c_accessToken);
+          console.log('  expires in:  ' + c_expiresIn + ' secs');
+          console.log('Refresh token: ' + c_refreshToken);
+
+
+          // display variables
+          this.userName = localStorage.getItem(AuthenticationService.OCEANIDS_USER);
+          this.accessToken = c_accessToken;
+          this.refreshToken = c_refreshToken;
+          this.expiresAt = m_expiryTime.format();
+          this.refreshCount += 1;
+
+          // if this is an auto refresh we will wait until 60 sec before the timeout then make the call
+          if (auto === true) {
+
+            // calc time of next refresh..
+            const c_refreshTime: Moment = moment().add(timeToGo, 'seconds');
+            console.log('Waiting for ' + timeToGo + ' sec before refreshing again at: ' + c_refreshTime.format());
+            this.nextRefresh = c_refreshTime.format();
+
+            this.countDown = timeToGo;
+
+            // TODO - we should really clear any existing timers here
+            // clearTimeout(this.timer);
+
+            this.timer = setTimeout(() => {
+              this.refresh(true);
+            }, timeToGo * 1000);
+          }
+
+        },
+        error => {
+          console.log('Error refreshing token...');
+          console.log(error);
+        }
+      );
+
 
   }
 

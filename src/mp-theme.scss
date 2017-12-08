@@ -10,7 +10,7 @@
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue.
 $mp-primary: mat-palette($mat-teal);
-$mp-accent:  mat-palette($mat-amber, A200, A100, A400);
+$mp-accent:  mat-palette($mat-orange, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
 $mp-warn:    mat-palette($mat-pink);

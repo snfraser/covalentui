@@ -1,7 +1,7 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <td-layout #layout>
 
-  <td-navigation-drawer flex sidenavTitle="Applications" logo="assets:teradata" name="{{loginName}}"
+  <td-navigation-drawer flex sidenavTitle="Applications" name="{{loginName}}"
                         email="{{loginEmail}}">
 
     <!-- APP SELECT MENU -->
@@ -43,7 +43,7 @@
       <button mat-icon-button tdLayoutToggle>
         <mat-icon>menu</mat-icon>
       </button>
-      <mat-icon [routerLink]="['/']" class="mat-icon-logo cursor-pointer" svgIcon="assets:teradata"></mat-icon>
+      <mat-icon [routerLink]="['/']" class="mat-icon-logo cursor-pointer">add</mat-icon>
       <span [routerLink]="['/']" class="cursor-pointer">Oceanids C2 </span> <span class="hostenvlabel">&nbsp;&nbsp;[{{hostEnv}}]</span>
     </div>
 
@@ -69,7 +69,8 @@
             <ng-template let-last="last" let-index ngFor [ngForOf]="[0,1,2,3,4,5,6,7,8,9]">
               <a mat-list-item>
                 <mat-icon color="warn" matListAvatar>error</mat-icon>
-                <h4 matLine><span class="text-wrap">An error of some sort occurred while doing some sort of network activity.</span></h4>
+                <h4 matLine><span class="text-wrap">An error of some sort occurred while doing some sort of network activity.</span>
+                </h4>
                 <p matLine>{{3 * index + 12}} minutes ago</p>
               </a>
               <mat-divider *ngIf="!last"></mat-divider>
@@ -180,17 +181,17 @@
                 <!-- NEW MISSION EDIT PANEL -->
                 <div [hidden]="noNewMission">
                   <mat-form-field>
-                    <input matInput placeholder="New mission name" name="f_new_mission" value="mission-name" [(ngModel)]="newMissionName">
+                    <input matInput placeholder="New mission name" name="f_new_mission" value="mission-name"
+                           [(ngModel)]="newMissionName">
                     <button mat-button matSuffix mat-icon-button matTooltip="clear" (click)="newMissionName=''">
                       <mat-icon>close</mat-icon>
                     </button>
-                    <button mat-button matSuffix mat-icon-button color="warn" matTooltip="Create mission" (click)="createMission()">
+                    <button mat-button matSuffix mat-icon-button color="warn" matTooltip="Create mission"
+                            (click)="createMission()">
                       <mat-icon>cloud_done</mat-icon>
                     </button>
                   </mat-form-field>
                 </div>
-
-
 
 
                 <div class="button-row">
@@ -209,11 +210,28 @@
                   </mat-select>
                 </mat-form-field>
                 <p></p>
+
+                <!-- MISSION VERSION COMMIT MESSAGE EDIT PANEL -->
+                <div [hidden]="noNewCommit" *tdLoading="'nvc'" tdLoadingMode="determinate" tdLoadingType="circle" tdLoadingStrategy="overlay" tdLoadingColor="primary">
+                  <mat-form-field>
+                    <input matInput placeholder="Commit message" name="f_commit" value="commit-message"
+                           [(ngModel)]="newCommitMessage">
+                    <button mat-button matSuffix mat-icon-button matTooltip="clear" (click)="newCommitMessage=''">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                    <button mat-button matSuffix mat-icon-button color="warn" matTooltip="Commit plan version"
+                            (click)="commitVersion()">
+                      <mat-icon>cloud_done</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+
+
                 <div class="button-row">
                   <button mat-mini-fab color="primary" (click)="checkpass()" matTooltip="Add a new plan version">
                     <mat-icon>add</mat-icon>
                   </button>
-                  <button mat-mini-fab color="accent" matTooltip="Commit latest plan version">
+                  <button mat-mini-fab color="accent" matTooltip="Commit latest plan version" (click)="addNewCommit()">
                     <mat-icon>save</mat-icon>
                   </button>
                   <button mat-mini-fab color="warn" [disabled]="true" matTooltip="Transmit plan to glider">
@@ -356,16 +374,20 @@
       <!-- MAIN CONTENT CARD(S) -->
       <div tdMediaToggle="gt-xs" [mediaClasses]="['push-sm']">
         <mat-card>
-          <mat-card-title>
+          <!--<mat-card-title>
           </mat-card-title>
-          <mat-card-subtitle> {{selectedglider=='' ? '' : selectedglider + '>>' + selecteddeploy + '>>' +
+           <mat-card-subtitle> {{selectedglider=='' ? '' : selectedglider + '>>' + selecteddeploy + '>>' +
             selectedmission + '>>' +
             selectedplan}}
           </mat-card-subtitle>
-          <mat-divider></mat-divider>
+          <mat-divider></mat-divider> -->
           <mat-card-content>
 
             <mat-tab-group>
+
+              <mat-tab label="Map">
+                <app-map></app-map>
+              </mat-tab>
 
               <mat-tab *ngFor="let t of tabs" label="{{t.title}}">
 
@@ -379,11 +401,6 @@
 
               </mat-tab>
 
-              <mat-tab label="Map">
-
-                <img src="./assets/bathymetryuk.jpg" width="800px">
-
-              </mat-tab>
 
 
             </mat-tab-group>

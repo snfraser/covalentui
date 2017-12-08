@@ -28,20 +28,25 @@ import {
   CovalentCommonModule,
   CovalentExpansionPanelModule,
   CovalentLayoutModule,
+  CovalentLoadingModule,
   CovalentMediaModule, CovalentMenuModule, CovalentNotificationsModule,
   CovalentStepsModule
 } from '@covalent/core';
+
+import * as L from 'leaflet';
 
 import { AppComponent } from './app.component';
 
 import {AuthenticationService} from './authentication.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
+import { MapComponent } from './map/map.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginDialogComponent
+    LoginDialogComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +74,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
     CovalentCommonModule,
     CovalentMediaModule,
     CovalentStepsModule,
+    CovalentLoadingModule,
     CovalentMenuModule,
     CovalentExpansionPanelModule,
     CovalentDynamicFormsModule,

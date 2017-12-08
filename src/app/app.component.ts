@@ -2,7 +2,7 @@ import {
   Component, HostBinding, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, OnInit,
   ViewChild, ElementRef
 } from '@angular/core';
-import {TdLayoutComponent, TdMediaService} from '@covalent/core';
+import {TdLayoutComponent, TdMediaService, TdLoadingService} from '@covalent/core';
 import * as moment from 'moment';
 import {Moment} from 'moment';
 import {environment} from '../environments/environment';
@@ -10,6 +10,9 @@ import {environment} from '../environments/environment';
 import {AuthenticationService} from './authentication.service';
 import {MatDialog, MatDialogRef} from '@angular/material';
 import {LoginDialogComponent} from './login-dialog/login-dialog.component';
+import {Observable} from 'rxjs/Observable';
+import "rxjs/add/observable/interval";
+import "rxjs/add/operator/take";
 
 
 @Component({
@@ -218,7 +221,12 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   noNewMission = true;
 
+  noNewCommit = true;
+
   newMissionName;
+
+  newCommitMessage;
+
 
   loginName = 'SNF';
   loginEmail = 'snf@sams';
@@ -243,7 +251,8 @@ export class AppComponent implements AfterViewInit, OnInit {
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               public media: TdMediaService,
               private authService: AuthenticationService,
-              private dialogFactory: MatDialog) {
+              private dialogFactory: MatDialog,
+              private loadingService: TdLoadingService) {
   }
 
   ngOnInit() {
@@ -326,15 +335,24 @@ export class AppComponent implements AfterViewInit, OnInit {
     }
 
     // setup countdown timer
-    setInterval(() => {
+    /*setInterval(() => {
       if (this.countDown >= 2) {
         this.countDown -= 2;
       }
-    }, 2000);
+    }, 2000);*/
+
+
+    Observable.interval(2000).subscribe(
+      tick => {
+        if (this.countDown >= 2) {
+          this.countDown -= 2;
+        }
+      }
+    );
 
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
 
     console.log('Found layout object: ');
     console.log(this.layout);
@@ -382,6 +400,31 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   createMission() {
     // extract the name from the form field and send to backend
+  }
+
+
+  addNewCommit() {
+
+    this.noNewCommit = !this.noNewCommit;
+
+  }
+
+  commitVersion() {
+
+    this.loadingService.register('nvc');
+
+    Observable.interval(5000).take(1).subscribe(
+      done => {
+        this.loadingService.resolve('nvc');
+        this.newCommitMessage = '';
+        this.noNewCommit = true;
+
+        console.log('commit ok...');
+      }
+    );
+
+
+    // extract commit message from form field and send to backend
 
 
   }

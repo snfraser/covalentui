@@ -58,7 +58,7 @@
       <span style="color: mediumspringgreen">[{{countDown}}]</span>
 
       <button class="overflow-visible" mat-icon-button [matMenuTriggerFor]="notificationsMenu">
-        <td-notification-count [notifications]="16">
+        <td-notification-count [notifications]="notifications.length">
           <mat-icon>notifications</mat-icon>
         </td-notification-count>
       </button>
@@ -66,12 +66,12 @@
         <td-menu>
           <div td-menu-header class="md-subhead">Notifications</div>
           <mat-nav-list dense>
-            <ng-template let-last="last" let-index ngFor [ngForOf]="[0,1,2,3,4,5,6,7,8,9]">
+            <ng-template let-last="last" let-item let-i="index" ngFor [ngForOf]="notifications">
               <a mat-list-item>
                 <mat-icon color="warn" matListAvatar>error</mat-icon>
-                <h4 matLine><span class="text-wrap">An error of some sort occurred while doing some sort of network activity.</span>
+                <h4 matLine><span class="text-wrap">{{item.message}}</span>
                 </h4>
-                <p matLine>{{3 * index + 12}} minutes ago</p>
+                <p matLine>{{3 * i + 12}} minutes ago</p>
               </a>
               <mat-divider *ngIf="!last"></mat-divider>
             </ng-template>

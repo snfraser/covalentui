@@ -11,7 +11,7 @@
 <h4 mat-card-subtitle>Map Tools</h4>
     <mat-card-content>
 
-      <mat-list>
+      <!--<mat-list>
 
         <mat-list-item>Select</mat-list-item>
         <mat-list-item>Clear</mat-list-item>
@@ -29,11 +29,45 @@
         <mat-list-item>Shade</mat-list-item>
 
 
-      </mat-list>
+      </mat-list>-->
+
+      <mat-grid-list cols="2" rowHeight="1:1">
+        <mat-grid-tile><a (click)="disabledrag()"><mat-icon matTooltip="Disable map drag">home</mat-icon></a></mat-grid-tile>
+        <mat-grid-tile><a (click)="enabledrag()"><mat-icon  matTooltip="(Re-)enable map drag">pan_tool</mat-icon></a></mat-grid-tile>
+        <mat-grid-tile><mat-icon>add_location</mat-icon></mat-grid-tile>
+        <mat-grid-tile><mat-icon>all_out</mat-icon></mat-grid-tile>
+        <mat-grid-tile><a (click)="pindrop()"><mat-icon  matTooltip="Enable waypoint editing mode">pin_drop</mat-icon></a></mat-grid-tile>
+        <mat-grid-tile><mat-icon>flip_to_back</mat-icon></mat-grid-tile>
+        <mat-grid-tile><mat-icon>lock</mat-icon></mat-grid-tile>
+        <mat-grid-tile><mat-icon>select_all</mat-icon></mat-grid-tile>
+        <mat-grid-tile><mat-icon>gps_fixed</mat-icon></mat-grid-tile>
+        <mat-grid-tile><mat-icon>crop</mat-icon></mat-grid-tile>
+        <mat-grid-tile><mat-icon>center_focus_strong</mat-icon></mat-grid-tile>
+        <mat-grid-tile><mat-icon>insert_comment</mat-icon></mat-grid-tile>
+
+      </mat-grid-list>
+
 
     </mat-card-content>
 
   </mat-card>
+
+    <mat-card>
+    <h4 mat-card-subtitle>Positions</h4>
+
+    <mat-card-content>
+
+      <mat-nav-list dense>
+        <a mat-list-item>Latest</a>
+        <a mat-list-item>Between</a>
+        <a mat-list-item>Mission</a>
+        <a mat-list-item>Deploy</a>
+        <a mat-list-item>Last n</a>
+      </mat-nav-list>
+
+    </mat-card-content>
+
+    </mat-card>
 
   </div>
 </div>

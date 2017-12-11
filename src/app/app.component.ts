@@ -13,6 +13,9 @@ import {LoginDialogComponent} from './login-dialog/login-dialog.component';
 import {Observable} from 'rxjs/Observable';
 import "rxjs/add/observable/interval";
 import "rxjs/add/operator/take";
+import {NotificationService} from "./services/notification.service";
+import {NotificationMessage} from "./models/notification.message";
+import {Subscription} from "rxjs/Subscription";
 
 
 @Component({
@@ -213,6 +216,8 @@ export class AppComponent implements AfterViewInit, OnInit {
     {id: 4, name: 'Waveglider'}
   ];
 
+  notifications: NotificationMessage[] = [];
+
   filteredGliders = [];
 
   noDisplayDeployments = true;
@@ -248,11 +253,16 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   timer;
 
+
+  notificationSubscription: Subscription;
+
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               public media: TdMediaService,
               private authService: AuthenticationService,
               private dialogFactory: MatDialog,
-              private loadingService: TdLoadingService) {
+              private loadingService: TdLoadingService,
+              private notificationService: NotificationService) {
+    this.notificationSubscription = this.notificationService.getMessage().subscribe(message => this.handleNotification(message));
   }
 
   ngOnInit() {
@@ -350,6 +360,7 @@ export class AppComponent implements AfterViewInit, OnInit {
       }
     );
 
+
   }
 
   ngAfterViewInit() {
@@ -363,6 +374,8 @@ export class AppComponent implements AfterViewInit, OnInit {
       this._changeDetectorRef.detectChanges();
     });
   }
+
+  handleNotification(message: NotificationMessage) { this.notifications.push(message); }
 
 // select off mission dropdown
   selmission(m) {
@@ -555,6 +568,7 @@ export class AppComponent implements AfterViewInit, OnInit {
           console.log('Error logging in...');
           console.log(error);
           // this needs to get to notifyService or to
+
         }
       );
   }

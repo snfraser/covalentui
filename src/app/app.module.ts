@@ -18,7 +18,7 @@ import {
   MatSidenavModule,
   MatSnackBarModule,
   MatTabsModule,
-  MatToolbarModule, MatMenuModule, MatInputModule,
+  MatToolbarModule, MatMenuModule, MatInputModule, MatGridListModule,
 } from '@angular/material';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -40,6 +40,7 @@ import { AppComponent } from './app.component';
 import {AuthenticationService} from './authentication.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { MapComponent } from './map/map.component';
+import {NotificationService} from './services/notification.service';
 
 
 @NgModule({
@@ -63,6 +64,7 @@ import { MapComponent } from './map/map.component';
     MatInputModule,
     MatMenuModule,
     MatSidenavModule,
+    MatGridListModule,
     MatSelectModule,
     MatOptionModule,
     MatToolbarModule,
@@ -79,7 +81,9 @@ import { MapComponent } from './map/map.component';
     CovalentExpansionPanelModule,
     CovalentDynamicFormsModule,
     CovalentNotificationsModule],
-  providers: [AuthenticationService],
+  providers: [
+    AuthenticationService,
+    NotificationService],
   entryComponents: [LoginDialogComponent],
   bootstrap: [AppComponent]
 })

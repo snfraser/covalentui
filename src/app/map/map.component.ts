@@ -1,8 +1,9 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 
 import * as L from 'leaflet';
-import {MatSnackBar} from '@angular/material';
+import {MatDialog, MatDialogRef, MatSnackBar} from '@angular/material';
 import {NotificationService} from "../services/notification.service";
+import {BetweenTimesDialogComponent} from "../popups/between-times-dialog/between-times-dialog.component";
 
 @Component({
   selector: 'app-map',
@@ -18,7 +19,9 @@ export class MapComponent implements OnInit, AfterViewInit {
   ch2Icon: L.Icon;
 
 
-  constructor(private toaster: MatSnackBar, private notificationService: NotificationService) {
+  constructor(private toaster: MatSnackBar,
+              private dialogFactory: MatDialog,
+              private notificationService: NotificationService) {
   }
 
   ngAfterViewInit() {
@@ -31,6 +34,8 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     const arcgisurl = 'http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}';
 
+    const stamenurl = 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg';
+
     const bs1 = L.tileLayer(arcgisurl,
       {
         id: 'arcgisbase',
@@ -42,7 +47,14 @@ export class MapComponent implements OnInit, AfterViewInit {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     });
 
-    const basemaps = {'ESRI': bs1, 'OSM': bs2};
+    const bs3 = L.tileLayer(stamenurl, {
+      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+      subdomains: 'abcd',
+      minZoom: 3,
+      maxZoom: 16
+    });
+
+    const basemaps = {'ESRI': bs1, 'OSM': bs2, 'STA': bs3};
 
     L.control.layers(basemaps, null).addTo(this.map);
 
@@ -102,6 +114,11 @@ export class MapComponent implements OnInit, AfterViewInit {
     // add listener for click on map - the behaviour will depend on what mode etc...
     this.map.on('click', e => this.hclick(e));
 
+
+    const ctx = document.getElementById('mymap');
+    console.log('Map context from document model...');
+    console.log(ctx);
+
   }
 
   ngOnInit() {
@@ -140,6 +157,19 @@ hclick(e) {
     this.map.dragging.disable();
     this.toaster.open('Dragging is disabled on map', 'Dismiss', {duration: 2000});
   }
+
+  // =================
+  // Popup Dialogs etc
+  // =================
+
+  showBetweenTimesDialog() {
+    const btd = this.dialogFactory.open(BetweenTimesDialogComponent);
+
+    btd.afterClosed().subscribe(
+      data => console.log(data)
+    );
+  }
+
 
 
 }

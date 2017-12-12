@@ -179,7 +179,6 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   tabs: Object[] = [
     {title: 'Mission', x: 'A form and stuff to select missions and plan stuff here'},
-    {title: 'Charts', x: 'Engineering data charts etc'},
     {title: 'Log', x: 'A log of events relating to the glider'}
   ];
 

@@ -3,7 +3,7 @@
 <div layout="row">
 
   <div flex="85">
-    <div style="height: 700px;" id="mymap"></div>
+    <div style="height: 900px;" id="mymap"></div>
   </div>
 
   <div flex="15">
@@ -59,7 +59,7 @@
 
       <mat-nav-list dense>
         <a mat-list-item>Latest</a>
-        <a mat-list-item>Between</a>
+        <a mat-list-item (click)="showBetweenTimesDialog()">Between</a>
         <a mat-list-item>Mission</a>
         <a mat-list-item>Deploy</a>
         <a mat-list-item>Last n</a>

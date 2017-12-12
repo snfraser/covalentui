@@ -71,7 +71,7 @@
                 <mat-icon color="warn" matListAvatar>error</mat-icon>
                 <h4 matLine><span class="text-wrap">{{item.message}}</span>
                 </h4>
-                <p matLine>{{3 * i + 12}} minutes ago</p>
+                <p matLine>{{item.time | date:'y-MM-ddTHH:mm:ss'}}</p>
               </a>
               <mat-divider *ngIf="!last"></mat-divider>
             </ng-template>
@@ -83,8 +83,8 @@
       </mat-menu>
 
 
-      <a mat-icon-button matTooltip="loose the right nav" (click)="channelInfo.toggle()">
-        <mat-icon>cancel</mat-icon>
+      <a mat-icon-button matTooltip="lose the right nav" (click)="channelInfo.toggle()">
+        <mat-icon>flip</mat-icon>
       </a>
     </div>
 
@@ -152,10 +152,21 @@
       <mat-sidenav #channelInfo mode="side" align="end" [opened]="true" [style.width.px]="270">
         <div layout="column" layout-fill>
           <mat-toolbar>
-            <span class="mat-subheader">Communications</span>
+            <span class="mat-subheader"></span>
             <span flex></span>
+            <mat-menu #appMenu="matMenu">
+              <button mat-menu-item> Settings </button>
+              <button mat-menu-item> Help </button>
+            </mat-menu>
+
+            <button mat-icon-button [matMenuTriggerFor]="appMenu">
+              <mat-icon>settings</mat-icon>
+            </button>
+
+
+
             <button mat-icon-button (click)="channelInfo.toggle()">
-              <mat-icon>clear</mat-icon>
+              <mat-icon>flip</mat-icon>
             </button>
           </mat-toolbar>
 
@@ -210,6 +221,8 @@
                   </mat-select>
                 </mat-form-field>
                 <p></p>
+
+
 
                 <!-- MISSION VERSION COMMIT MESSAGE EDIT PANEL -->
                 <div [hidden]="noNewCommit" *tdLoading="'nvc'" tdLoadingMode="determinate" tdLoadingType="circle" tdLoadingStrategy="overlay" tdLoadingColor="primary">
@@ -387,6 +400,10 @@
 
               <mat-tab label="Map">
                 <app-map></app-map>
+              </mat-tab>
+
+              <mat-tab label = "Plots">
+                <app-example-plot></app-example-plot>
               </mat-tab>
 
               <mat-tab *ngFor="let t of tabs" label="{{t.title}}">

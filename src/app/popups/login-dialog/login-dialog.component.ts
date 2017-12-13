@@ -20,6 +20,8 @@ export class LoginDialogComponent implements OnInit {
 
   processLogin() {
 
+
+
     this.loginDialog.close(this.model);
 
   }

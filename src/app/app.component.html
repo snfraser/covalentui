@@ -71,6 +71,7 @@
                 <mat-icon color="warn" matListAvatar>error</mat-icon>
                 <h4 matLine><span class="text-wrap">{{item.message}}</span>
                 </h4>
+                <h5 matLine>{{item.source}}</h5>
                 <p matLine>{{item.time | date:'y-MM-ddTHH:mm:ss'}}</p>
               </a>
               <mat-divider *ngIf="!last"></mat-divider>
@@ -92,7 +93,7 @@
     <mat-nav-list td-sidenav-content [tdLayoutNavListClose]="!media.query('gt-sm')">
 
       <div style="padding-bottom: 10px;">
-        <h3 matSubheader>Gliders</h3>
+        <!--<h3 matSubheader>Gliders</h3>
         <mat-chip-list>
           <mat-chip [color]="purple" (click)="applyFilter(1)" matTooltip="ALL">
             <mat-icon class="wee-icon">view_list</mat-icon>
@@ -109,7 +110,16 @@
           <mat-chip color="accent" (click)="applyFilter(5)" matTooltip="By type">
             <mat-icon class="wee-icon">airplanemode_active</mat-icon>
           </mat-chip>
-        </mat-chip-list>
+        </mat-chip-list>-->
+
+        <mat-grid-list cols="5" rowHeight="1:1">
+          <mat-grid-tile><a (click)="applyFilter(1)"><mat-icon matTooltip="All" color="">view_list</mat-icon></a></mat-grid-tile>
+          <mat-grid-tile><a (click)="applyFilter(2)"><mat-icon matTooltip="Deployment">rowing</mat-icon></a></mat-grid-tile>
+          <mat-grid-tile><a (click)="applyFilter(3)"><mat-icon matTooltip="Favorites">favorite</mat-icon></a></mat-grid-tile>
+          <mat-grid-tile><a (click)="applyFilter(4)"><mat-icon matTooltip="Recent">query_builder</mat-icon></a></mat-grid-tile>
+          <mat-grid-tile><a (click)="applyFilter(5)"><mat-icon matTooltip="By type">airplanemode_active</mat-icon></a></mat-grid-tile>
+        </mat-grid-list>
+
       </div>
 
       <!-- Deployment selection hidden form -->
@@ -140,7 +150,7 @@
         <a mat-list-item (click)="selglider(item)">
           <mat-icon matListAvatar>{{item.icon}}</mat-icon>
           <h3 matLine> {{item.title}} </h3>
-          <p matLine> {{item.description}} </p>
+          <p matLine> {{item.description}}</p>
         </a>
         <mat-divider matInset *ngIf="!last"></mat-divider>
       </ng-template>
@@ -199,15 +209,15 @@
                     </button>
                     <button mat-button matSuffix mat-icon-button color="warn" matTooltip="Create mission"
                             (click)="createMission()">
-                      <mat-icon>cloud_done</mat-icon>
+                      <mat-icon>send</mat-icon>
                     </button>
                   </mat-form-field>
                 </div>
 
 
                 <div class="button-row">
-                  <button mat-mini-fab color="primary" matTooltip="Add a new mission" (click)="addNewMission()">
-                    <mat-icon>add</mat-icon>
+                  <button mat-icon-button  matTooltip="Add a new mission" (click)="addNewMission()">
+                    <mat-icon>add_circle_outline</mat-icon>
                   </button>
                 </div>
 
@@ -232,22 +242,27 @@
                     <button mat-button matSuffix mat-icon-button matTooltip="clear" (click)="newCommitMessage=''">
                       <mat-icon>close</mat-icon>
                     </button>
+
+                    <button mat-button matSuffix mat-icon-button matTooltip="attach" (click)="extraCommitMessage()">
+                      <mat-icon>link</mat-icon>
+                    </button>
+
                     <button mat-button matSuffix mat-icon-button color="warn" matTooltip="Commit plan version"
                             (click)="commitVersion()">
-                      <mat-icon>cloud_done</mat-icon>
+                      <mat-icon>send</mat-icon>
                     </button>
                   </mat-form-field>
                 </div>
 
 
                 <div class="button-row">
-                  <button mat-mini-fab color="primary" (click)="checkpass()" matTooltip="Add a new plan version">
-                    <mat-icon>add</mat-icon>
+                  <button mat-icon-button (click)="checkpass()" matTooltip="Add a new plan version">
+                    <mat-icon>add_circle_outline</mat-icon>
                   </button>
-                  <button mat-mini-fab color="accent" matTooltip="Commit latest plan version" (click)="addNewCommit()">
+                  <button mat-icon-button matTooltip="Commit latest plan version" (click)="addNewCommit()">
                     <mat-icon>save</mat-icon>
                   </button>
-                  <button mat-mini-fab color="warn" [disabled]="true" matTooltip="Transmit plan to glider">
+                  <button mat-icon-button color="warn" [disabled]="false" matTooltip="Transmit plan to glider" (click)="selectBaseStation()">
                     <mat-icon>local_airport</mat-icon>
                   </button>
                 </div>

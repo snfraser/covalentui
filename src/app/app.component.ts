@@ -2,20 +2,21 @@ import {
   Component, HostBinding, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, OnInit,
   ViewChild, ElementRef
 } from '@angular/core';
-import {TdLayoutComponent, TdMediaService, TdLoadingService} from '@covalent/core';
+import {TdLayoutComponent, TdMediaService, TdLoadingService, TdDialogService} from '@covalent/core';
 import * as moment from 'moment';
 import {Moment} from 'moment';
 import {environment} from '../environments/environment';
 
-import {AuthenticationService} from './authentication.service';
-import {MatDialog, MatDialogRef} from '@angular/material';
-import {LoginDialogComponent} from './login-dialog/login-dialog.component';
+import {AuthenticationService} from './services/authentication.service';
+import {MatDialog, MatDialogRef, MatSnackBar} from '@angular/material';
+import {LoginDialogComponent} from './popups/login-dialog/login-dialog.component';
 import {Observable} from 'rxjs/Observable';
-import "rxjs/add/observable/interval";
-import "rxjs/add/operator/take";
-import {NotificationService} from "./services/notification.service";
-import {NotificationMessage} from "./models/notification.message";
-import {Subscription} from "rxjs/Subscription";
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/take';
+import {NotificationService} from './services/notification.service';
+import {NotificationMessage} from './models/notification.message';
+import {Subscription} from 'rxjs/Subscription';
+import {SelectBasestationDialogComponent} from './popups/select-basestation-dialog/select-basestation-dialog.component';
 
 
 @Component({
@@ -34,6 +35,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   selectedmission = '';
   selecteddeploy = '';
   selectedplan = '';
+
 
   routes: Object[] = [{
     icon: 'home',
@@ -219,6 +221,12 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   filteredGliders = [];
 
+  recentGliders = [];
+
+  recordRecentGliders = [];
+
+  favoriteGliders = [];
+
   noDisplayDeployments = true;
 
   noDisplayTypes = true;
@@ -259,8 +267,10 @@ export class AppComponent implements AfterViewInit, OnInit {
               public media: TdMediaService,
               private authService: AuthenticationService,
               private dialogFactory: MatDialog,
+              private dialogService: TdDialogService,
               private loadingService: TdLoadingService,
-              private notificationService: NotificationService) {
+              private notificationService: NotificationService,
+              private toaster: MatSnackBar) {
     this.notificationSubscription = this.notificationService.getMessage().subscribe(message => this.handleNotification(message));
   }
 
@@ -374,7 +384,9 @@ export class AppComponent implements AfterViewInit, OnInit {
     });
   }
 
-  handleNotification(message: NotificationMessage) { this.notifications.push(message); }
+  handleNotification(message: NotificationMessage) {
+    this.notifications.push(message);
+  }
 
 // select off mission dropdown
   selmission(m) {
@@ -393,6 +405,33 @@ export class AppComponent implements AfterViewInit, OnInit {
   selglider(g) {
     console.log('selglider: ' + g.title);
     this.selectedglider = g.title;
+    this.selRecentGlider(g);
+  }
+
+  selFavoriteGlider(g) {
+    this.favoriteGliders.push(g);
+  }
+
+  /**
+   * Select the specified glider as a recently-viewed one.
+   * @param g The glider.
+   */
+  selRecentGlider(g) {
+
+    // check its not already in the list...
+    if (!this.recentGliders.includes(g)) {
+
+      this.recentGliders.push(g);
+
+      // this is how we store the gliders in localstorage -
+      // TODO: object = gliderSvc.addGliderToRecents(g): array to dump in LS
+      // TODO: localStorage.setItem('recent', JSON.stringify(object)
+
+
+      this.recordRecentGliders.push({time: new Date(), glider: g.title});
+      // this should happen at logout or if we dont logout just jump elsewhere then needs doing now...
+      localStorage.setItem('recents', JSON.stringify(this.recordRecentGliders));
+    }
   }
 
   checkpass() {
@@ -418,6 +457,31 @@ export class AppComponent implements AfterViewInit, OnInit {
   addNewCommit() {
 
     this.noNewCommit = !this.noNewCommit;
+
+  }
+
+  extraCommitMessage() {
+
+    // popup a dialog to capture a longer and maybe structured commit message
+    //this.toaster.open('A dialog to capture a longer and structured commit message', 'Dismiss', {duration: 8000});
+
+    this.dialogService.openPrompt({
+      message: 'Please enter a detailed commit message - this will be added to the mission plan-log.',
+      disableClose: false, // defaults to false
+      title: 'Extended commit message',
+      value: 'commit message',
+      cancelButton: 'Cancel',
+      acceptButton: 'Accept',
+    }).afterClosed().subscribe((newValue: string) => {
+      if (newValue) {
+        this.toaster.open(newValue, 'Dismiss', {duration: 8000});
+        this.newCommitMessage = '';
+        this.noNewCommit = true;
+      } else {
+        // DO SOMETHING ELSE
+      }
+    });
+
 
   }
 
@@ -463,6 +527,9 @@ export class AppComponent implements AfterViewInit, OnInit {
         break;
       case 4:
         // Display Recent gliders
+        this.noDisplayDeployments = true;
+        this.noDisplayTypes = true;
+        this.filteredGliders = this.recentGliders;
         break;
       case 5:
         // Select by glider type
@@ -526,6 +593,21 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   }
 
+  /**
+   * Open a base-station selection dialog.
+   */
+  selectBaseStation() {
+    const baseStationSelectionDialog = this.dialogFactory.open(SelectBasestationDialogComponent);
+
+    baseStationSelectionDialog.afterClosed().subscribe(
+      selection => {
+
+        this.toaster.open('Selected base-station: ' + selection, 'Dismiss', {duration: 4000});
+
+      }
+    );
+  }
+
 
   /**
    * Login using the stored user info and credentials.
@@ -562,11 +644,14 @@ export class AppComponent implements AfterViewInit, OnInit {
           this.refreshToken = c_refreshToken;
           this.expiresAt = m_expiryTime.format();
 
+          this.notificationService.sendSuccess('Logged in ok', 'LoginDialog');
+
         },
         error => {
           console.log('Error logging in...');
           console.log(error);
           // this needs to get to notifyService or to
+          this.notificationService.sendError('Error logging in', 'Login', error.status);
 
         }
       );

@@ -2,8 +2,8 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 
 import * as L from 'leaflet';
 import {MatDialog, MatDialogRef, MatSnackBar} from '@angular/material';
-import {NotificationService} from "../services/notification.service";
-import {BetweenTimesDialogComponent} from "../popups/between-times-dialog/between-times-dialog.component";
+import {NotificationService} from '../services/notification.service';
+import {BetweenTimesDialogComponent} from '../popups/between-times-dialog/between-times-dialog.component';
 
 @Component({
   selector: 'app-map',
@@ -130,7 +130,11 @@ export class MapComponent implements OnInit, AfterViewInit {
   // Map controls and click handling
   // ================================
 
-hclick(e) {
+  /**
+   * Handle a click on the map area
+   * @param e The click event.
+   */
+   hclick(e) {
     this.toaster.open('You clicked at: ' + e.latlng, 'Dismiss', {duration: 2000});
 
     const lat = e.latlng.lat;

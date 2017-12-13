@@ -30,10 +30,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import {CovalentDynamicFormsModule} from '@covalent/dynamic-forms';
 import {
   CovalentCommonModule,
+  CovalentDialogsModule,
   CovalentExpansionPanelModule,
   CovalentLayoutModule,
   CovalentLoadingModule,
-  CovalentMediaModule, CovalentMenuModule, CovalentNotificationsModule,
+  CovalentMediaModule,
+  CovalentMenuModule,
+  CovalentNotificationsModule,
   CovalentStepsModule
 } from '@covalent/core';
 
@@ -41,14 +44,15 @@ import * as L from 'leaflet';
 
 import { AppComponent } from './app.component';
 
-import { AuthenticationService } from './authentication.service';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
+import { AuthenticationService } from './services/authentication.service';
+import { LoginDialogComponent } from './popups/login-dialog/login-dialog.component';
 import { MapComponent } from './map/map.component';
 import { NotificationService } from './services/notification.service';
 import { BetweenTimesDialogComponent } from './popups/between-times-dialog/between-times-dialog.component';
 import { ExamplePlotComponent } from './example-plot/example-plot.component';
 
 import {ChartsModule} from 'ng2-charts';
+import { SelectBasestationDialogComponent } from './popups/select-basestation-dialog/select-basestation-dialog.component';
 
 
 @NgModule({
@@ -57,7 +61,8 @@ import {ChartsModule} from 'ng2-charts';
     LoginDialogComponent,
     MapComponent,
     BetweenTimesDialogComponent,
-    ExamplePlotComponent
+    ExamplePlotComponent,
+    SelectBasestationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -89,6 +94,7 @@ import {ChartsModule} from 'ng2-charts';
     CovalentCommonModule,
     CovalentMediaModule,
     CovalentStepsModule,
+    CovalentDialogsModule,
     CovalentLoadingModule,
     CovalentMenuModule,
     CovalentExpansionPanelModule,
@@ -97,7 +103,10 @@ import {ChartsModule} from 'ng2-charts';
   providers: [
     AuthenticationService,
     NotificationService],
-  entryComponents: [LoginDialogComponent, BetweenTimesDialogComponent],
+  entryComponents: [
+    LoginDialogComponent,
+    BetweenTimesDialogComponent,
+    SelectBasestationDialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,40 @@
+<mat-card>
+
+  <mat-card-title style="background-color: lightseagreen; color: honeydew;">
+    Select Basestation
+  </mat-card-title>
+
+  <mat-card-content>
+
+    <form>
+
+      <!-- <mat-list>
+
+        <mat-list-item *ngFor="let s of stations">
+
+           <mat-radio-button [value]="s.name">{{s.name}}</mat-radio-button>
+
+        </mat-list-item>
+
+
+      </mat-list> -->
+
+        <mat-radio-group class="radiolist" name="f_basestation" [(ngModel)]="selectedBasestation">
+          <mat-radio-button class="radiobutton" *ngFor="let s of stations" [value]="s.name">
+            {{s.name}}
+          </mat-radio-button>
+        </mat-radio-group>
+
+
+    </form>
+
+
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button mat-dialog-close color="primary" (click)="selectBasestation()">Select</button>
+    <button mat-raised-button mat-dialog-close color="warn">Cancel</button>
+  </mat-card-actions>
+
+
+</mat-card>

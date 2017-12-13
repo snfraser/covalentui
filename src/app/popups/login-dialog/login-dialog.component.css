@@ -1,5 +1,7 @@
 .loginform {
   max-width: 500px;
+  padding: 0px;
+  margin: 2px;
 }
 
 .loginformtitle {

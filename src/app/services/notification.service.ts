@@ -10,7 +10,10 @@ export class NotificationService {
   private subject = new Subject<NotificationMessage>();
 
 
-  /** Send a message to be caught be other components - experimental.*/
+  /**
+   *  Send a message to be caught be other component  subscribers.
+   * @param {NotificationMessage} message The message to send.
+   */
   sendMessage(message: NotificationMessage) {
     this.subject.next(message );
   }

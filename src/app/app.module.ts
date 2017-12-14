@@ -3,7 +3,7 @@ import { BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+
 
 import {
   MatButtonModule,
@@ -51,8 +51,11 @@ import { NotificationService } from './services/notification.service';
 import { BetweenTimesDialogComponent } from './popups/between-times-dialog/between-times-dialog.component';
 import { ExamplePlotComponent } from './example-plot/example-plot.component';
 
-import {ChartsModule} from 'ng2-charts';
+import { ChartsModule } from 'ng2-charts';
 import { SelectBasestationDialogComponent } from './popups/select-basestation-dialog/select-basestation-dialog.component';
+import { ReviewWaypointsDialogComponent } from './popups/review-waypoints-dialog/review-waypoints-dialog.component';
+import { PaddingPipe } from './pipes/padding.pipe';
+import {HttpModule} from '@angular/http';
 
 
 @NgModule({
@@ -62,14 +65,16 @@ import { SelectBasestationDialogComponent } from './popups/select-basestation-di
     MapComponent,
     BetweenTimesDialogComponent,
     ExamplePlotComponent,
-    SelectBasestationDialogComponent
+    SelectBasestationDialogComponent,
+    ReviewWaypointsDialogComponent,
+    PaddingPipe
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule,
+    HttpModule,
     RouterModule.forRoot([]),
     ChartsModule,
     MatButtonModule,
@@ -106,7 +111,9 @@ import { SelectBasestationDialogComponent } from './popups/select-basestation-di
   entryComponents: [
     LoginDialogComponent,
     BetweenTimesDialogComponent,
-    SelectBasestationDialogComponent],
+    SelectBasestationDialogComponent,
+    ReviewWaypointsDialogComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

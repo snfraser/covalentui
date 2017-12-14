@@ -1,0 +1,25 @@
+<mat-card>
+  <mat-card-title style="background-color: lightseagreen ; color: honeydew;">
+    Waypoint Editing
+  </mat-card-title>
+
+  <mat-card-content>
+
+    <mat-list>
+
+      <mat-list-item *ngFor="let w of data.waypoints">
+        <h3 matLine>{{w.name | padding:'12'}}
+          <span >{{w.lat | number:'2.2-3'}}, {{w.lng | number:'3.2-3'}}</span></h3>
+      </mat-list-item>
+
+    </mat-list>
+
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button mat-dialog-close color="primary" (click)="sendWaypoints()">Send</button>
+    <button mat-raised-button mat-dialog-close color="warn" (click)="cancelSendWaypoints()">Cancel</button>
+  </mat-card-actions>
+
+
+</mat-card>

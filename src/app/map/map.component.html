@@ -2,21 +2,21 @@
 
 <div layout="row">
 
-  <div flex="85">
+  <div flex="85" flex-gt-md="90" flex-lt-md="80">
     <div style="height: 900px;" id="mymap"></div>
   </div>
 
-  <div flex="15">
+  <div flex="15" flex-gt-md="10" flex-lt-md="20">
   <mat-card>
 <h4 mat-card-subtitle>Map Tools</h4>
     <mat-card-content>
 
       <mat-grid-list cols="2" rowHeight="1:1">
-        <mat-grid-tile><a (click)="disabledrag()"><mat-icon matTooltip="Disable map drag">home</mat-icon></a></mat-grid-tile>
-        <mat-grid-tile><a (click)="enabledrag()"><mat-icon  matTooltip="(Re-)enable map drag">pan_tool</mat-icon></a></mat-grid-tile>
-        <mat-grid-tile><mat-icon>add_location</mat-icon></mat-grid-tile>
-        <mat-grid-tile><mat-icon>all_out</mat-icon></mat-grid-tile>
-        <mat-grid-tile><a (click)="pindrop()"><mat-icon  matTooltip="Enable waypoint editing mode">pin_drop</mat-icon></a></mat-grid-tile>
+        <mat-grid-tile><a (click)="endWaypoints()"><mat-icon matTooltip="Waypoint editing complete">done</mat-icon></a></mat-grid-tile>
+        <mat-grid-tile><a (click)="moveWaypoints()"><mat-icon  matTooltip="Move waypoints">gps_fixed</mat-icon></a></mat-grid-tile>
+        <mat-grid-tile><mat-icon>pan_tool</mat-icon></mat-grid-tile>
+        <mat-grid-tile><a (click)="clearWaypoints()"><mat-icon matTooltip="Clear all waypoints">all_out</mat-icon></a></mat-grid-tile>
+        <mat-grid-tile><a (click)="startWaypoints()"><mat-icon  matTooltip="Enable waypoint editing mode">add_location</mat-icon></a></mat-grid-tile>
         <mat-grid-tile><mat-icon>flip_to_back</mat-icon></mat-grid-tile>
         <mat-grid-tile><mat-icon>lock</mat-icon></mat-grid-tile>
         <mat-grid-tile><mat-icon>select_all</mat-icon></mat-grid-tile>

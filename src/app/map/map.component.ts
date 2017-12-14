@@ -4,6 +4,7 @@ import * as L from 'leaflet';
 import {MatDialog, MatDialogRef, MatSnackBar} from '@angular/material';
 import {NotificationService} from '../services/notification.service';
 import {BetweenTimesDialogComponent} from '../popups/between-times-dialog/between-times-dialog.component';
+import {ReviewWaypointsDialogComponent} from '../popups/review-waypoints-dialog/review-waypoints-dialog.component';
 
 @Component({
   selector: 'app-map',
@@ -18,6 +19,11 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ch2Icon: L.Icon;
 
+  waypoints = [];
+
+  markers = [];
+
+  mapWptMode = 3; // 1=drop, 2=move, 3=none
 
   constructor(private toaster: MatSnackBar,
               private dialogFactory: MatDialog,
@@ -134,23 +140,51 @@ export class MapComponent implements OnInit, AfterViewInit {
    * Handle a click on the map area
    * @param e The click event.
    */
-   hclick(e) {
-    this.toaster.open('You clicked at: ' + e.latlng, 'Dismiss', {duration: 2000});
+  hclick(e) {
 
-    const lat = e.latlng.lat;
-    const lng = e.latlng.lng;
+    switch (this.mapWptMode) {
+      case 1:
+        // drop
 
-   //const polygon = L.circleMarker(e.latlng, {stroke: false, fillColor: 'green', fill: true, fillOpacity: 1, radius: 5}).addTo(this.map);
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
 
-   const marker = L.marker([lat, lng], {icon: this.ch1Icon}).addTo(this.map);
+        //const polygon = L.circleMarker(e.latlng, {stroke: false, fillColor: 'green', fill: true, fillOpacity: 1, radius: 5}).addTo(this.map);
 
-   this.notificationService.sendSuccess('A marker was placed at (' + lat + ', ' + lng + ')', 'map-component');
+        const marker = L.marker([lat, lng], {
+          icon: this.ch1Icon,
+          title: 'wpt-' + this.waypoints.length
+        }).addTo(this.map);
 
-}
+        this.markers.push(marker);
 
-  pindrop() {
-    this.toaster.open('Waypoint editing enabled', 'Dismiss', {duration: 2000});
+        marker.on('dragend', e => {
+          console.log('Dragend marker: ' + marker.options.title);
+          console.log('Dropping waypoint at: (' + marker.getLatLng().lat + ', ' + marker.getLatLng().lng + ')');
+          // at this point update the waypoints table also - they should be associated with the markers...
+        });
+
+        this.notificationService.sendSuccess('A marker was placed at (' + lat + ', ' + lng + ')', 'map-component');
+
+        this.waypoints.push({name: 'WPT-' + (this.waypoints.length - 1), lat: +lat, lng: +lng});
+
+        break;
+
+      case 2:
+        // move
+        // detect where we clicked, find nearest wpt and allow to move...animate
+        this.toaster.open('Locating wpt nearest to: ' + e.latlng, 'Dismiss', {duration: 2000});
+
+        break;
+      case 3:
+        // none - out of here
+        break;
+
+    }
+
+
   }
+
 
   enabledrag() {
     this.map.dragging.enable();
@@ -162,18 +196,76 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.toaster.open('Dragging is disabled on map', 'Dismiss', {duration: 2000});
   }
 
+  /**
+   * Start editing and adding waypoints.
+   */
+  startWaypoints() {
+    this.mapWptMode = 1;
+    document.getElementById('mymap').style.cursor = 'crosshair';
+    this.toaster.open('Waypoint editing enabled', 'Dismiss', {duration: 2000});
+  }
+
+  /**
+   * Finish editing or adding waypoints.
+   */
+  endWaypoints() {
+    this.mapWptMode = 3;
+    document.getElementById('mymap').style.cursor = 'auto';
+    const dialogRef = this.dialogFactory.open(ReviewWaypointsDialogComponent, {data: {waypoints: this.waypoints}});
+
+    this.markers.forEach(
+      (marker) => {
+        // detect when we enter the marker's zone, need this to allow dragging
+        marker.dragging.disable();
+      });
+
+  }
+
+  /**
+   * Delete the last waypoint added.
+   */
+  deleteLastWaypoint() {
+  }
+
+  /**
+   * Delete ALL waypoints added so far.
+   */
+  clearWaypoints() {
+
+    this.markers.forEach(marker => {
+      marker.removeFrom(this.map);
+    });
+
+    this.markers.length = 0;
+
+    this.waypoints.length = 0;
+
+  }
+
+  /**
+   * Start moving waypoints - grab a waypoint and select a new location.
+   * Remains in force until startWaypoints is selected again.
+   */
+  moveWaypoints() {
+    this.mapWptMode = 2;
+    document.getElementById('mymap').style.cursor = 'all-scroll';
+    // disable the click function: map-waypoint_mode = WPT_MOVE_MODE
+
+    this.markers.forEach(
+      (marker) => {
+        // detect when we enter the marker's zone, need this to allow dragging
+        marker.dragging.enable();
+      });
+  }
+
   // =================
   // Popup Dialogs etc
   // =================
 
   showBetweenTimesDialog() {
     const btd = this.dialogFactory.open(BetweenTimesDialogComponent);
-
-    btd.afterClosed().subscribe(
-      data => console.log(data)
-    );
+    btd.afterClosed().subscribe(data => console.log(data));
   }
-
 
 
 }

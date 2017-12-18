@@ -1,10 +1,15 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {MatDialog, MatDialogRef, MatSnackBar} from '@angular/material';
 
 import * as L from 'leaflet';
-import {MatDialog, MatDialogRef, MatSnackBar} from '@angular/material';
+
+
 import {NotificationService} from '../services/notification.service';
 import {BetweenTimesDialogComponent} from '../popups/between-times-dialog/between-times-dialog.component';
 import {ReviewWaypointsDialogComponent} from '../popups/review-waypoints-dialog/review-waypoints-dialog.component';
+import {WaypointsService} from '../services/waypoints.service';
+import {IWaypoint} from '../models/waypoint';
+
 
 @Component({
   selector: 'app-map',
@@ -25,9 +30,15 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   mapWptMode = 3; // 1=drop, 2=move, 3=none
 
+  polyline: L.Polyline;
+
+  noCurrentWpt = true;
+  currentWpt = {name: '', lat: 0.0, lng: 0.0};
+
   constructor(private toaster: MatSnackBar,
               private dialogFactory: MatDialog,
-              private notificationService: NotificationService) {
+              private notificationService: NotificationService,
+              private waypointsService: WaypointsService) {
   }
 
   ngAfterViewInit() {
@@ -137,24 +148,27 @@ export class MapComponent implements OnInit, AfterViewInit {
   // ================================
 
   /**
-   * Handle a click on the map area
+   * Handle a click on the map area.
+   * There is a load of extra test stuff in here which needs rationalizing at some point.
    * @param e The click event.
    */
-  hclick(e) {
+  hclick(e: any) {
 
     switch (this.mapWptMode) {
       case 1:
         // drop
-
+        this.noCurrentWpt = false;
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
 
-        //const polygon = L.circleMarker(e.latlng, {stroke: false, fillColor: 'green', fill: true, fillOpacity: 1, radius: 5}).addTo(this.map);
+        // const polygon = L.circleMarker(e.latlng, {stroke: false, fillColor: 'green', fill: true, fillOpacity: 1, radius: 5}).addTo(this.map);
 
         const marker = L.marker([lat, lng], {
           icon: this.ch1Icon,
           title: 'wpt-' + this.waypoints.length
         }).addTo(this.map);
+
+        marker.dragging.disable();
 
         this.markers.push(marker);
 
@@ -164,9 +178,24 @@ export class MapComponent implements OnInit, AfterViewInit {
           // at this point update the waypoints table also - they should be associated with the markers...
         });
 
+        marker.on('dragstart', e => {
+          console.log('Dragstart marker: ' + marker.options.title);
+        });
+        marker.on('drag', e => {
+          console.log('Drag: ' + marker.options.title);
+        });
+
         this.notificationService.sendSuccess('A marker was placed at (' + lat + ', ' + lng + ')', 'map-component');
 
         this.waypoints.push({name: 'WPT-' + (this.waypoints.length - 1), lat: +lat, lng: +lng});
+
+        const wpt: IWaypoint = {name: 'wpt-' + (this.waypoints.length - 1), lat: lat, lng: lng};
+
+        this.waypointsService.addWaypoint(wpt);
+
+        this.currentWpt.name = 'wpt-' + (this.waypoints.length - 1);
+        this.currentWpt.lat = lat;
+        this.currentWpt.lng = lng;
 
         break;
 
@@ -197,20 +226,31 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Start editing and adding waypoints.
+   * Start editing and adding waypoints to the current list.
    */
   startWaypoints() {
-    this.mapWptMode = 1;
+    this.mapWptMode = 1; // drop
     document.getElementById('mymap').style.cursor = 'crosshair';
     this.toaster.open('Waypoint editing enabled', 'Dismiss', {duration: 2000});
+
+    // therev may already be markers so disable dragging on these -
+    this.markers.forEach(
+      (marker) => {
+        // detect when we enter the marker's zone, need this to allow dragging
+        marker.dragging.disable();
+      });
+
   }
 
   /**
-   * Finish editing or adding waypoints.
+   * Finish editing or adding waypoints. This is only used once we are definitely finished
+   * as it should then send these to the backend and ultimately to the glider base-station.
    */
   endWaypoints() {
-    this.mapWptMode = 3;
+    this.noCurrentWpt = true;
+    this.mapWptMode = 3; // none
     document.getElementById('mymap').style.cursor = 'auto';
+    // are these uptodate - ie with any dragging done - no - need to update stored values on drag events
     const dialogRef = this.dialogFactory.open(ReviewWaypointsDialogComponent, {data: {waypoints: this.waypoints}});
 
     this.markers.forEach(
@@ -222,13 +262,32 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Draw a polyline between all the current waypoints.
+   */
+  toggleJoinWaypoints() {
+
+    if (this.polyline) {
+      this.polyline.removeFrom(this.map);
+      this.polyline = undefined;
+    } else {
+      const latlngs = [];
+      this.markers.forEach(marker => {
+        latlngs.push(marker.getLatLng());
+      });
+
+      this.polyline = L.polyline(latlngs, {color: 'blue', weight: 2}).addTo(this.map);
+    }
+
+  }
+
+  /**
    * Delete the last waypoint added.
    */
   deleteLastWaypoint() {
   }
 
   /**
-   * Delete ALL waypoints added so far.
+   * Delete ALL waypoints added so far - also the map markers.
    */
   clearWaypoints() {
 
@@ -237,9 +296,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     });
 
     this.markers.length = 0;
-
     this.waypoints.length = 0;
 
+    // wipe any polylines
+    if (this.polyline) {
+      this.polyline.removeFrom(this.map);
+    }
   }
 
   /**
@@ -247,13 +309,14 @@ export class MapComponent implements OnInit, AfterViewInit {
    * Remains in force until startWaypoints is selected again.
    */
   moveWaypoints() {
-    this.mapWptMode = 2;
+    this.mapWptMode = 2; // grab/move
     document.getElementById('mymap').style.cursor = 'all-scroll';
     // disable the click function: map-waypoint_mode = WPT_MOVE_MODE
 
     this.markers.forEach(
       (marker) => {
-        // detect when we enter the marker's zone, need this to allow dragging
+        // detect when we enter the marker's zone, need this to allow dragging...
+        // NOTE: leaflet can detect when the cursor is over any added basic-markers
         marker.dragging.enable();
       });
   }
@@ -263,7 +326,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   // =================
 
   showBetweenTimesDialog() {
-    const btd = this.dialogFactory.open(BetweenTimesDialogComponent);
+    const btd = this.dialogFactory.open(BetweenTimesDialogComponent, {panelClass: 'app-between-times-dialog'});
     btd.afterClosed().subscribe(data => console.log(data));
   }
 

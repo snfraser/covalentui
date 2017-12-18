@@ -56,6 +56,7 @@ import { SelectBasestationDialogComponent } from './popups/select-basestation-di
 import { ReviewWaypointsDialogComponent } from './popups/review-waypoints-dialog/review-waypoints-dialog.component';
 import { PaddingPipe } from './pipes/padding.pipe';
 import {HttpModule} from '@angular/http';
+import {WaypointsService} from "./services/waypoints.service";
 
 
 @NgModule({
@@ -107,7 +108,8 @@ import {HttpModule} from '@angular/http';
     CovalentNotificationsModule],
   providers: [
     AuthenticationService,
-    NotificationService],
+    NotificationService,
+    WaypointsService],
   entryComponents: [
     LoginDialogComponent,
     BetweenTimesDialogComponent,

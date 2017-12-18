@@ -17,6 +17,8 @@ import {NotificationService} from './services/notification.service';
 import {NotificationMessage} from './models/notification.message';
 import {Subscription} from 'rxjs/Subscription';
 import {SelectBasestationDialogComponent} from './popups/select-basestation-dialog/select-basestation-dialog.component';
+import {WaypointsService} from "./services/waypoints.service";
+import {IWaypoint} from "./models/waypoint";
 
 
 @Component({
@@ -29,6 +31,10 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   @ViewChild('layout', {read: ElementRef}) layout: ElementRef;
 
+  // TODO - This will go in the waypoints.component later
+  waypointSubscription: Subscription;
+
+  waypoints: IWaypoint[] = [];
 
   selectroute = '';
   selectedglider = '';
@@ -270,8 +276,10 @@ export class AppComponent implements AfterViewInit, OnInit {
               private dialogService: TdDialogService,
               private loadingService: TdLoadingService,
               private notificationService: NotificationService,
+              private waypointsService: WaypointsService,
               private toaster: MatSnackBar) {
     this.notificationSubscription = this.notificationService.getMessage().subscribe(message => this.handleNotification(message));
+    this.waypointSubscription = this.waypointsService.getWaypoint().subscribe(waypoint => this.handleWaypoint(waypoint));
   }
 
   ngOnInit() {
@@ -384,8 +392,21 @@ export class AppComponent implements AfterViewInit, OnInit {
     });
   }
 
+  /**
+   * Handle receipt of a message from the notification service.
+   * @param {NotificationMessage} message The notification message.
+   */
   handleNotification(message: NotificationMessage) {
     this.notifications.push(message);
+  }
+
+  /**
+   * Handle receipt of a waypoint from the waypoints service.
+   * @param {IWaypoint} waypoint The new waypoint.
+   */
+  handleWaypoint(waypoint: IWaypoint) {
+    console.log('AppCmp:: handleWpt: ' + waypoint);
+    this.waypoints.push(waypoint);
   }
 
 // select off mission dropdown
